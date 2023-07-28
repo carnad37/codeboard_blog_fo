@@ -3,19 +3,21 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
+    "dev": "npx nuxi dev --dotenv .env.prd",
+    "local": "npx nuxi dev --dotenv .env.local",
+    "generate": "npx nuxi generate --dotenv .env.prd",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "typescript": "4.9.3",
     "@types/node": "^18",
-    "nuxt": "^3.5.3"
+    "nuxt": "^3.6.5"
   },
   "dependencies": {
     "@mdi/font": "^7.2.96",
     "@pinia/nuxt": "^0.4.11",
     "sass": "^1.62.1",
-    "vuetify": "^3.3.3"
+    "vuetify": "^3.3.10"
   }
 }

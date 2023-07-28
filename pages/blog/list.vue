@@ -3,7 +3,7 @@ import {YN} from "~/composables/common-interface";
 import Post from "~/pages/blog/post.vue";
 import ArticleRegist from "~/components/blog/ArticleRegist.vue";
 
-interface PostData {
+export interface ArticleData {
   seq: number
   title: string
   content: string
@@ -21,8 +21,8 @@ const headerSetting = useLayoutStore().headerSetting
 headerSetting.visible = true
 
 // asyncData
-const result = await useCBFetch.get<Array<PostData>>('/api/blog/findAll')
-let blogList : Array<PostData> = [];
+const result = await useCBFetch.get<Array<ArticleData>>('/api/blog/public/article/findAll')
+let blogList : Array<ArticleData> = [];
 if (result.data?.data) {
     blogList = result.data.data;
 }
@@ -31,6 +31,7 @@ const dataContents = ref(blogList)
 // data
 const page = ref(5)
 const registerFlag = ref(false)
+const selectArticle : Ref<ArticleData|null> = ref(null)
 
 const dataHeader = [
   {
@@ -45,6 +46,7 @@ const dataHeader = [
 
 // method
 const popRegister = ()=>{
+    selectArticle.value = null
     registerFlag.value = true
 }
 
@@ -63,7 +65,7 @@ const popRegister = ()=>{
             <v-btn variant="elevated" color="deep-purple-darken-4" @click="popRegister()">등록</v-btn>
         </div>
     </div>
-    <ArticleRegist v-model="registerFlag"></ArticleRegist>
+    <ArticleRegist v-model="registerFlag" :article="selectArticle"></ArticleRegist>
 </template>
 
 <style scoped>

@@ -1,7 +1,7 @@
 import {UseFetchOptions } from "nuxt/app"
 import {_AsyncData, KeysOf, PickFrom} from "nuxt/dist/app/composables/asyncData"
 import type { FetchError } from 'ofetch';
-import {COMMON} from "~/constants/common";
+import {COMMON} from "~/constants/common/common";
 import {RouterMethod} from "h3";
 
 export interface CommonResponse<T> {

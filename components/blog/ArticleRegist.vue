@@ -1,16 +1,20 @@
 <script setup lang="ts">
 
 import {CommonResponse, useCBFetch} from "~/composables/custom-fetch";
-import {COMMON} from "~/constants/common";
+import {COMMON} from "~/constants/common/common";
 import {LoginResponse} from "~/composables/user-auth";
 import {VForm} from "vuetify/components/VForm";
+import {ArticleData} from "~/pages/blog/list.vue";
+import {WritableComputedRef} from "@vue/reactivity";
 
 // props
 interface Props {
     modelValue?: boolean
+    articleData: ArticleData | null
 }
 const props = withDefaults(defineProps<Props>(), {
-    modelValue: false
+    modelValue: false,
+    articleData: null
 })
 
 const emits = defineEmits(['update:modelValue'])
@@ -22,6 +26,9 @@ const width = 450;
 const form = ref<VForm|null>(null)
 
 // reactive
+const isEdit = computed(()=>{
+    return props.articleData !== null
+})
 const tVisible = computed({
     get() {
         return props.modelValue
@@ -31,13 +38,23 @@ const tVisible = computed({
     }
 })
 
+// data
 const title = ref('')
 const summary = ref('')
 const content = ref('')
 
-// pass const
-const permitChar = '~!@#$%^&*()_+='
-const passLenth : number = 8
+// method
+const articleSave = async ()=>{
+    if (await useValidateForm(form)) {
+        const param = {title: title.value, summary: summary.value, content: content.value}
+        const result = await useCBFetch.post<ArticleData>('/api/blog/private/article/save', {body: param})
+        // let responseArticle = new ArticleData();
+        // if (result.data?.data) {
+        //     responseArticle = result.data.data
+        // } else return
+        // 부모 리스트 재로딩
+    }
+}
 
 </script>
 
@@ -63,10 +80,10 @@ const passLenth : number = 8
                 </v-row>
                 <v-row>
                     <v-col class="pb-6 text-center">
-                        <v-btn variant="elevated" class="font-weight-bold text-h6" color="indigo-accent-4" @click.self.prevent="join">등록</v-btn>
+                        <v-btn variant="elevated" height="45" width="80"  class="font-weight-bold text-h6" color="indigo-accent-4" @click.self.prevent="articleSave()" v-text="isEdit ? '수정' : '등록'"></v-btn>
                     </v-col>
                     <v-col class="pb-6 text-center">
-                        <v-btn variant="elevated" height="60"  class="font-weight-bold text-h6" color="red-darken-1" @click="tVisible = false">닫기</v-btn>
+                        <v-btn variant="elevated" height="45" width="80"  class="font-weight-bold text-h6" color="red-darken-1" @click="tVisible = false">닫기</v-btn>
                     </v-col>
                 </v-row>
             </v-container>

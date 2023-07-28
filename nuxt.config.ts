@@ -1,9 +1,12 @@
+require('dotenv').config();
+
+
 export default defineNuxtConfig({
     modules: [
-        '@pinia/nuxt'
+      '@pinia/nuxt'
     ],
-    // @ts-ignore
     pages: true,
+    ssr: false,
     css: [
         'vuetify/lib/styles/main.sass',
         '@/assets/scss/common.scss',
@@ -11,30 +14,29 @@ export default defineNuxtConfig({
     ],
     build: {
         transpile: ['vuetify'],
-        parallel: true,
-        cache: true,
-        terser: {
-            terserOptions: {
-                compress: {
-                    drop_console: true
-                }
-            }
-        }
     },
     runtimeConfig: {
         public: {
-            baseURL : 'http://localhost:20000'
+            baseURL : process.env.GW_URL
+        },
+        custom: {
+            user: {
+                passwd: {
+                    length : process.env.USER_RULE_PASSWD_LENGTH,
+                    permitChar : process.env.USER_RULE_PERMIT_CHAR,
+                }
+            }
         }
     },
     vite: {
         server: {
           proxy: {
               "/auth": {
-                  target: "http://localhost:20000",
+                  target: process.env.GW_URL,
                   changeOrigin: true
               },
               "/api" : {
-                  target: "http://localhost:20000",
+                  target: process.env.GW_URL,
                   changeOrigin: true
               }
           },
