@@ -19,6 +19,9 @@ export default defineNuxtConfig({
         public: {
             baseURL : process.env.GW_URL
         },
+        app: {
+            baseURL : process.env.GW_URL
+        },
         custom: {
             user: {
                 passwd: {
