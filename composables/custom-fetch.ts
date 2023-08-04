@@ -10,6 +10,7 @@ export interface CommonResponse<T> {
     httpCode: number,
     alertFlag: boolean
     data?: T
+    dataList?: Array<T>
 }
 
 // useFetch의 경우 제대로 타입스크립트로 체크가 이루워지지 않음.
@@ -28,6 +29,7 @@ const commonLogic = async <ResT> (path : string, method : RouterMethod, param? :
             param = {}
         }
         param.method = method
+        param.baseURL = useRuntimeConfig().public.baseURL;
         const result : _AsyncData<CommonResponse<ResT> | any, FetchError<any> | null> = param ? await useFetch(path, param) : await useFetch(path)
         const resultData : CommonResponse<ResT> | null = result.data.value
         const success = resultData?.httpCode === 200 && resultData?.errorCode === COMMON.API.SUCCESS.CODE

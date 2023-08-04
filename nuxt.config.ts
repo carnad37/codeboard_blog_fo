@@ -19,9 +19,6 @@ export default defineNuxtConfig({
         public: {
             baseURL : process.env.GW_URL
         },
-        app: {
-            baseURL : process.env.GW_URL
-        },
         custom: {
             user: {
                 passwd: {
@@ -32,18 +29,18 @@ export default defineNuxtConfig({
         }
     },
     vite: {
-        server: {
-          proxy: {
-              "/auth": {
-                  target: process.env.GW_URL,
-                  changeOrigin: true
-              },
-              "/api" : {
-                  target: process.env.GW_URL,
-                  changeOrigin: true
-              }
-          },
-        },
+        // server: {
+        //   proxy: {
+        //       "/auth": {
+        //           target: process.env.GW_URL,
+        //           changeOrigin: true
+        //       },
+        //       "/api" : {
+        //           target: process.env.GW_URL,
+        //           changeOrigin: true
+        //       }
+        //   },
+        // },
         define: {
             'process.env.DEBUG': false,
         },
