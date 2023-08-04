@@ -29,7 +29,7 @@ const commonLogic = async <ResT> (path : string, method : RouterMethod, param? :
             param = {}
         }
         param.method = method
-        param.baseURL = useRuntimeConfig().public.baseURL;
+        if (!process.dev) param.baseURL = useRuntimeConfig().public.baseURL;
         const result : _AsyncData<CommonResponse<ResT> | any, FetchError<any> | null> = param ? await useFetch(path, param) : await useFetch(path)
         const resultData : CommonResponse<ResT> | null = result.data.value
         const success = resultData?.httpCode === 200 && resultData?.errorCode === COMMON.API.SUCCESS.CODE

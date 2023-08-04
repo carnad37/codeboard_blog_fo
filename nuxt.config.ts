@@ -1,5 +1,4 @@
-require('dotenv').config();
-
+import { resolve } from 'path';
 
 export default defineNuxtConfig({
     modules: [
@@ -17,37 +16,49 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
-            baseURL : process.env.GW_URL
-        },
-        custom: {
-            user: {
-                passwd: {
-                    length : process.env.USER_RULE_PASSWD_LENGTH,
-                    permitChar : process.env.USER_RULE_PERMIT_CHAR,
+            baseURL : process.env.GW_URL,
+            custom: {
+                user: {
+                    passwd: {
+                        length : process.env.USER_RULE_PASSWD_LENGTH,
+                        permitChar : process.env.USER_RULE_PERMIT_CHAR,
+                    }
                 }
             }
-        }
+        },
+
     },
     vite: {
-        // server: {
-        //   proxy: {
-        //       "/auth": {
-        //           target: process.env.GW_URL,
-        //           changeOrigin: true
-        //       },
-        //       "/api" : {
-        //           target: process.env.GW_URL,
-        //           changeOrigin: true
-        //       }
-        //   },
-        // },
+        server: {
+          proxy: {
+              "/auth": {
+                  target: process.env.GW_URL,
+                  changeOrigin: true
+              },
+              "/api" : {
+                  target: process.env.GW_URL,
+                  changeOrigin: true
+              }
+          },
+        },
         define: {
             'process.env.DEBUG': false,
         },
     },
-    // hooks: {
-    //     'pages:extend' (routes) {
-    //         //
-    //     }
-    // }
+    hooks: {
+        'pages:extend' (pages) {
+            pages.push({
+                name: 'testPage',
+                path: '/test/:testValue?',
+                file: resolve(__dirname, './pages/index/')
+            })
+            //
+            // routes: [
+            //
+            // ]
+            // routes: () => [
+            //
+            // ]
+        }
+    }
 });

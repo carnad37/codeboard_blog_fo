@@ -5,7 +5,13 @@ import {integer} from "vscode-languageserver-types";
 //     footer: FooterSetting
 // }
 export enum YN {
-    Y, N
+    Y = 'Y'
+    , N = 'N'
+}
+
+export enum MenuType {
+    BOARD = 'B'
+    , MENU = 'M'
 }
 
 export interface CommonSetting {
