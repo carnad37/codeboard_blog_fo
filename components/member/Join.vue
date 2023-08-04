@@ -4,7 +4,7 @@ import {CommonResponse, useCBFetch} from "~/composables/custom-fetch";
 import {COMMON} from "~/constants/common/common";
 import {LoginResponse} from "~/composables/user-auth";
 import {VForm} from "vuetify/components/VForm";
-import {useValidateForm} from "~/composables/common-api";
+import {useRecaptcha, useValidateForm} from "~/composables/common-api";
 
 // props
 interface Props {
@@ -29,6 +29,7 @@ const tVisible = computed({
         return props.modelValue
     },
     set(val : boolean) {
+        if (!val) recaptcha.value = ''
         emits('update:modelValue', val)
     }
 })
@@ -47,10 +48,13 @@ const passwdCheckRule = [
     },
 ];
 
-const join = async ()=>{
+const recaptcha : Ref<string> = ref('')
+
+const join = async (token:string)=>{
     // validate
     if (await useValidateForm(form)) {
-        const response = await useCBFetch.post<LoginResponse>('/api/member/public/user/save', {body : {email: email.value, passwd: passwd.value, nickname: nickname.value}})
+        const bodyParam = {email: email.value, passwd: passwd.value, nickname: nickname.value, token: token}
+        const response = await useCBFetch.post<LoginResponse>('/api/member/public/user/save', {body : bodyParam})
         const responseData = response.data;
         console.log(responseData)
         if (responseData?.errorCode !== COMMON.API.SUCCESS.CODE && responseData?.alertFlag) {
@@ -61,7 +65,13 @@ const join = async ()=>{
             useAlertStore().open(`회원가입이 완료되었습니다.\n환영합니다 ${nickname.value} 님.`)
         }
     }
+}
 
+const joinClick = async ()=>{
+    useRecaptcha((token)=>{
+        console.log("test : " + token)
+        join(token);
+    });
 }
 
 </script>
@@ -86,7 +96,10 @@ const join = async ()=>{
                     </v-row>
                     <v-row>
                         <v-col class="mb-6 text-center">
-                            <v-btn variant="elevated" class="font-weight-bold" color="indigo-accent-4" @click.self.prevent="join">회원가입</v-btn>
+                            <RecaptchaCheckbox class="codeboard-recaptcha-btn" :key="'recaptcha'" v-model="recaptcha" :theme="'light'" />
+                        </v-col>
+                        <v-col class="mb-6 text-center">
+                            <v-btn variant="elevated" class="font-weight-bold" color="indigo-accent-4" @click="joinClick()">회원가입</v-btn>
                         </v-col>
                         <v-col class="mb-6 text-center">
                             <v-btn variant="elevated" class="font-weight-bold" color="red-darken-1" @click="tVisible = false">닫기</v-btn>

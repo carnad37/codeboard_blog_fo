@@ -1,5 +1,8 @@
 <script setup lang="ts">
 
+
+import {useRecaptcha} from "~/composables/common-api";
+
 definePageMeta({
     layout: "no-menu-layout"
 })
@@ -18,6 +21,7 @@ console.log(useRoute().params)
       <div>
           <nuxt-link :to="'/blog/list'">블로그 리스트입니다</nuxt-link>
       </div>
+      <v-btn>테스트</v-btn>
   </div>
 </template>
 

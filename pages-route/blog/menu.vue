@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {YN} from "~/composables/common-interface";
-import Post from "~/pages/blog/post.vue";
 import ArticleRegist from "~/components/blog/ArticleRegist.vue";
 
 export interface ArticleData {

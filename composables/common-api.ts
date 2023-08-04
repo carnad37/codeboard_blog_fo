@@ -8,3 +8,18 @@ export const useValidateForm = async (form : Ref<VForm|null>) : Promise<boolean>
     }
     return result
 }
+
+export const useRecaptcha = (callback : (token:string) => void)=>{
+    let result = null;
+    // @ts-ignore
+    grecaptcha.ready(function() {
+        // @ts-ignore
+        grecaptcha.execute(useRuntimeConfig().public.custom.config.recatpchaKey, {action: 'submit'})
+            .then(function(token : string) {
+                console.log(token)
+                callback(token)
+            }
+        );
+    });
+    return result;
+}

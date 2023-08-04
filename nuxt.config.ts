@@ -2,7 +2,8 @@ import { resolve } from 'path';
 
 export default defineNuxtConfig({
     modules: [
-      '@pinia/nuxt'
+        '@pinia/nuxt',
+        'vue-recaptcha/nuxt'
     ],
     pages: true,
     ssr: false,
@@ -14,19 +15,32 @@ export default defineNuxtConfig({
     build: {
         transpile: ['vuetify'],
     },
+    app: {
+        head: {
+            script: [
+                {
+                    src: 'https://www.google.com/recaptcha/api.js?render=6LcJoXwnAAAAAN2BMtKP-TbwLnh85OHgveoD-_D5'
+                    , defer: true
+                }
+            ]
+        }
+    },
     runtimeConfig: {
         public: {
             baseURL : process.env.GW_URL,
+            recaptcha: {
+                v2SiteKey: process.env.RECAPTCHA_KEY
+            },
             custom: {
                 user: {
                     passwd: {
                         length : process.env.USER_RULE_PASSWD_LENGTH,
                         permitChar : process.env.USER_RULE_PERMIT_CHAR,
                     }
-                }
-            }
-        },
+                },
+            },
 
+        },
     },
     vite: {
         server: {
@@ -47,18 +61,23 @@ export default defineNuxtConfig({
     },
     hooks: {
         'pages:extend' (pages) {
-            pages.push({
-                name: 'testPage',
-                path: '/test/:testValue?',
-                file: resolve(__dirname, './pages/index/')
-            })
-            //
-            // routes: [
-            //
-            // ]
-            // routes: () => [
-            //
-            // ]
+            pages.push(
+                {
+                    name: 'BoardArticle',
+                    path: '/article/:seq',
+                    file: resolve(__dirname, './pages-route/blog/article')
+                },
+                {
+                    name: 'BoardArticleList',
+                    path: '/article/:boardSeq/list',
+                    file: resolve(__dirname, './pages-route/blog/post')
+                },
+                {
+                    name: 'BoardMenuList',
+                    path: '/menu/:userSeq/list',
+                    file: resolve(__dirname, './pages-route/blog/menu')
+                }
+            )
         }
     }
 });
