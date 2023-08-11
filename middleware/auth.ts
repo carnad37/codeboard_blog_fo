@@ -1,3 +1,5 @@
+import {useAuthCheck} from "~/composables/user-auth";
+
 export default defineNuxtRouteMiddleware(async (to, from) => {
     /**
      * 몇가지 방법이 있는데, 사용할지 말지 한걸로 2개준비
@@ -10,7 +12,10 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
      *
      * 현재는 2로 진행
      */
-    // const authChecker = useUserAuth.loginCheck()
-    // if (await authChecker) abortNavigation()
+    if (!await useAuthCheck().isLogin()) {
+        // return abortNavigation("403")
+        throw createError({ statusCode: 403, statusMessage: 'Not Login' })
+
+    }
 
 })

@@ -6,6 +6,18 @@ const size = reactive({
     width: 400,
     height :300
 })
+
+watch(
+    ()=>alertStore.alert.visible
+    , async (value, oldValue) => {
+    if (!value && oldValue) {
+        // 보임 -> 안보임
+        if (alertStore.alert.callback) {
+            alertStore.alert.callback();
+        }
+    }
+})
+
 </script>
 
 <template>

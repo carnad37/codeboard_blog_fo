@@ -20,5 +20,8 @@
     "sass": "^1.62.1",
     "vue-recaptcha": "^3.0.0-alpha.6",
     "vuetify": "^3.3.10"
+  },
+  "overrides": {
+    "vue": "latest"
   }
 }

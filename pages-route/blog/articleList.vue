@@ -1,31 +1,23 @@
 <script setup lang="ts">
-import {YN} from "~/composables/common-interface";
+import {ArticleData, YN} from "~/composables/common-interface";
 import ArticleRegist from "~/components/blog/ArticleRegist.vue";
-
-export interface ArticleData {
-  seq: number
-  title: string
-  content: string
-  summary: string
-  publicFlag: YN
-  boardSeq: number
-  categorySeq: number
-}
 
 definePageMeta({
  layout: 'menu-layout'
 })
 
-const headerSetting = useLayoutStore().headerSetting
+const headerSetting = useLayoutStore().header
 headerSetting.visible = true
 
 // asyncData
-const result = await useCBFetch.get<Array<ArticleData>>('/api/blog/public/article/findAll')
+const result = await useCBFetch().get<Array<ArticleData>>('/api/blog/public/article/findAll')
 let blogList : Array<ArticleData> = [];
 if (result.data?.data) {
     blogList = result.data.data;
 }
 const dataContents = ref(blogList)
+// 자기 메뉴인지 확인
+
 
 // data
 const page = ref(5)
@@ -42,12 +34,13 @@ const dataHeader = [
       key: 'summary'
   },
 ]
-
 // method
 const popRegister = ()=>{
     selectArticle.value = null
     registerFlag.value = true
 }
+
+
 
 </script>
 

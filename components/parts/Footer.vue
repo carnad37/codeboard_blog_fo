@@ -2,7 +2,7 @@
 
 import {FooterSetting} from "~/composables/common-interface";
 
-const setting = useLayoutStore().footerSetting;
+const setting = useLayoutStore().footer;
 
 </script>
 

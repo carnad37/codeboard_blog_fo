@@ -4,8 +4,8 @@ import {CommonResponse, useCBFetch} from "~/composables/custom-fetch";
 import {COMMON} from "~/constants/common/common";
 import {LoginResponse} from "~/composables/user-auth";
 import {VForm} from "vuetify/components/VForm";
-import {ArticleData} from "~/pages/blog/list.vue";
 import {WritableComputedRef} from "@vue/reactivity";
+import {ArticleData} from "~/composables/common-interface";
 
 // props
 interface Props {
@@ -47,7 +47,7 @@ const content = ref('')
 const articleSave = async ()=>{
     if (await useValidateForm(form)) {
         const param = {title: title.value, summary: summary.value, content: content.value}
-        const result = await useCBFetch.post<ArticleData>('/api/blog/private/article/save', {body: param})
+        const result = await useCBFetch().post<ArticleData>('/api/blog/private/article/save', {body: param})
         // let responseArticle = new ArticleData();
         // if (result.data?.data) {
         //     responseArticle = result.data.data

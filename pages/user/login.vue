@@ -24,14 +24,11 @@ const email : Ref<string> = ref('')
 const passwd : Ref<string> = ref('')
 
 const registDialog = ref(false)
-
-
 const login = async () => {
     if (await useValidateForm(form)) {
-        if(await useUserAuth.login(email.value, passwd.value)) {
-            useAlertStore().open('로그인성공')
-            // 로그인 성공시
-            await useRouter().replace({path: '/'})
+        if(await useUserAuth().login(email.value, passwd.value)) {
+            const alertStore = useAlertStore();
+            alertStore.openWithCallback('로그인성공', ()=>useRouter().replace({path: '/'}))
         }
     }
 }
@@ -65,7 +62,7 @@ function openRegister() {
                                 <v-container class="pa-3">
                                     <v-row class="text-center">
                                         <v-col cols="6">
-                                            <v-btn variant="elevated" class="font-weight-bold" color="green" @click.self.prevent="login">로그인</v-btn>
+                                            <v-btn variant="elevated" class="font-weight-bold" color="green" @click="login">로그인</v-btn>
                                         </v-col>
                                         <v-col cols="6">
                                             <v-btn variant="elevated" class="font-weight-bold" color="indigo-accent-4" @click="openRegister">회원가입</v-btn>

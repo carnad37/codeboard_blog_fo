@@ -14,22 +14,26 @@ export interface CommonResponse<T> {
 }
 
 // useFetch의 경우 제대로 타입스크립트로 체크가 이루워지지 않음.
-export const useCBFetch = {
-    get: async <ResT> (path : string, param? : UseFetchOptions<ResT>)=>{
+export const useCBFetch = ()=> {
+    const get = async <ResT> (path : string, param? : UseFetchOptions<ResT>)=>{
         return commonLogic(path, 'get', param)
-    },
-    post: async <ResT> (path : string, param? : UseFetchOptions<ResT>)=>{
-        return await commonLogic(path, 'post', param)
-    },
+    }
+    const post = async <ResT> (path : string, param? : UseFetchOptions<ResT>)=>{
+        return commonLogic(path, 'post', param)
+    }
+    return {get, post}
 }
 
 const commonLogic = async <ResT> (path : string, method : RouterMethod, param? : UseFetchOptions<ResT>) => {
     try {
+        console.log(param)
         if (!param) {
+            console.log("check empty")
             param = {}
         }
         param.method = method
         if (!process.dev) param.baseURL = useRuntimeConfig().public.baseURL;
+
         const result : _AsyncData<CommonResponse<ResT> | any, FetchError<any> | null> = param ? await useFetch(path, param) : await useFetch(path)
         const resultData : CommonResponse<ResT> | null = result.data.value
         const success = resultData?.httpCode === 200 && resultData?.errorCode === COMMON.API.SUCCESS.CODE

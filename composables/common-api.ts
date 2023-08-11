@@ -1,4 +1,6 @@
 import {VForm} from "vuetify/components/VForm";
+import {CommonAlert} from "~/composables/common-interface";
+import {defineStore} from "pinia";
 
 export const useValidateForm = async (form : Ref<VForm|null>) : Promise<boolean> =>{
     let result = false
@@ -23,3 +25,22 @@ export const useRecaptcha = (callback : (token:string) => void)=>{
     });
     return result;
 }
+
+export const useApiProcess = defineStore('api-process-store', ()=>{
+    // const alert : CommonAlert = reactive({visible : false, message : ''})
+    let isNetworkProcessing = false
+
+    const start = async (callback : Function) => {
+        if (!isNetworkProcessing) {
+            isNetworkProcessing = true
+            await callback();
+            isNetworkProcessing = false
+        }
+    }
+
+    const stop = () => {
+        isNetworkProcessing = false
+    }
+
+    return {start, stop};
+})

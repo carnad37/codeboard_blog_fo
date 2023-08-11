@@ -15,6 +15,8 @@ export default defineNuxtConfig({
     build: {
         transpile: ['vuetify'],
     },
+    alias: {
+    },
     app: {
         head: {
             script: [
@@ -70,12 +72,17 @@ export default defineNuxtConfig({
                 {
                     name: 'BoardArticleList',
                     path: '/article/:boardSeq/list',
-                    file: resolve(__dirname, './pages-route/blog/post')
+                    file: resolve(__dirname, './pages-route/blog/articleList')
+                },
+                {
+                    name: 'BoardMenuRootList',
+                    path: '/menu/list',
+                    file: resolve(__dirname, './pages-route/blog/menuList')
                 },
                 {
                     name: 'BoardMenuList',
-                    path: '/menu/:userSeq/list',
-                    file: resolve(__dirname, './pages-route/blog/menu')
+                    path: '/menu/:boardSeq/list',
+                    file: resolve(__dirname, './pages-route/blog/menuList')
                 }
             )
         }

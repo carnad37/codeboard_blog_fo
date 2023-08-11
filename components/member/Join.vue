@@ -54,7 +54,7 @@ const join = async (token:string)=>{
     // validate
     if (await useValidateForm(form)) {
         const bodyParam = {email: email.value, passwd: passwd.value, nickname: nickname.value, token: token}
-        const response = await useCBFetch.post<LoginResponse>('/api/member/public/user/save', {body : bodyParam})
+        const response = await useCBFetch().post<LoginResponse>('/api/member/public/user/save', {body : bodyParam})
         const responseData = response.data;
         console.log(responseData)
         if (responseData?.errorCode !== COMMON.API.SUCCESS.CODE && responseData?.alertFlag) {
@@ -95,13 +95,15 @@ const joinClick = async ()=>{
                         </v-col>
                     </v-row>
                     <v-row>
-                        <v-col class="mb-6 text-center">
+                        <v-col class="text-center">
                             <RecaptchaCheckbox class="codeboard-recaptcha-btn" :key="'recaptcha'" v-model="recaptcha" :theme="'light'" />
                         </v-col>
-                        <v-col class="mb-6 text-center">
+                    </v-row>
+                    <v-row>
+                        <v-col v-if="recaptcha" class="mb-6 text-center">
                             <v-btn variant="elevated" class="font-weight-bold" color="indigo-accent-4" @click="joinClick()">회원가입</v-btn>
                         </v-col>
-                        <v-col class="mb-6 text-center">
+                        <v-col v-if="recaptcha" class="mb-6 text-center">
                             <v-btn variant="elevated" class="font-weight-bold" color="red-darken-1" @click="tVisible = false">닫기</v-btn>
                         </v-col>
                     </v-row>

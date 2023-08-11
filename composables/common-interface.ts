@@ -14,20 +14,41 @@ export enum MenuType {
     , MENU = 'M'
 }
 
-export interface CommonSetting {
-    // title: string,
-    visible: boolean
+
+
+export interface HeaderSetting {
+    title: string
+    visible : boolean
+    isSticky: boolean
 }
 
-export interface HeaderSetting extends CommonSetting {
-    length: number
-}
-
-export interface FooterSetting extends CommonSetting {
+export interface FooterSetting {
+    visible : boolean
     isSticky: boolean
 }
 
 export interface CommonAlert {
     message : string,
     visible : boolean,
+    callback : Function
+}
+
+export interface ArticleData {
+    seq: number
+    title: string
+    content: string
+    summary: string
+    publicFlag?: YN
+    boardSeq?: number
+    categorySeq?: number
+}
+
+export interface MenuData {
+    seq: number
+    title: string
+    menuOrder: number
+    parentSeq?: number
+    publicFlag?: YN
+    uuid?: string
+    childrenList?: Array<MenuData>
 }

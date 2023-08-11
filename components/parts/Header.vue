@@ -2,7 +2,7 @@
 
 import {HeaderSetting} from "~/composables/common-interface";
 
-const setting = useLayoutStore().headerSetting;
+const setting : HeaderSetting = useLayoutStore().header;
 
 </script>
 

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import CommonAlertDialog from "~/components/parts/CommonAlertDialog.vue";
+
+
 </script>
 
 <template>
