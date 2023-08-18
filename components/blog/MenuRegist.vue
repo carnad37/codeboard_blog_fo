@@ -4,11 +4,13 @@ import {useCBFetch} from "~/composables/custom-fetch";
 import {VForm} from "vuetify/components/VForm";
 import TreeTab, {Tree} from "~/components/common/TreeTab.vue";
 import {MenuData} from "~/composables/common-interface";
+import {useAlertStore} from "#imports";
 
 // props
 type MenuProps = {
     modelValue?: boolean  // show flag
     menuSeq: number
+    menuList?: Array<MenuData>
 }
 
 const props = withDefaults(defineProps<MenuProps>(), {
@@ -16,14 +18,26 @@ const props = withDefaults(defineProps<MenuProps>(), {
     menuSeq: 0
 })
 
-const emits = defineEmits(['update:modelValue'])
+const emits = defineEmits(['update:modelValue', 'save:after'])
 
 // asyncData
 const menuFindAllBody = {
     menuSeq : props.menuSeq
 }
+let tabTreeData : Array<Array<Tree>> = [[]]
+if (props.menuList?.length) {
+    tabTreeData = [[...props.menuList.map(target=>{
+        return {
+            name : target.title,
+            uniqueSeq : target.seq,
+            active : false,
+            children: target?.childrenList
+        }
+    })]]
+}
 
-let treeData : Array<Array<Tree>> = []
+
+// let treeData : Array<Array<Tree>> = []
 // watch(()=>props.userSeq
 //     , async (value, oldValue) => {
 //         if (value !== oldValue && value > 0) return
@@ -72,12 +86,27 @@ const publicFlag = ref(YN.Y)
 const parentSeq : Ref<number> = ref(props.menuSeq)
 
 // method
-const articleSave = async ()=>{
+const menuSave = async ()=>{
     if (await useValidateForm(form)) {
-        const param = {title: title.value, menuOrder: menuOrder.value, menuType: menuType.value, publicFLag: publicFlag.value, parentSeq: parentSeq.value}
+        const param = {title: title.value, menuOrder: menuOrder.value, menuType: menuType.value, publicFlag: publicFlag.value, parentSeq: parentSeq.value}
         const result = await useCBFetch().post<MenuData>('/api/blog/private/menu/save', {body: param})
-        console.log(result)
+        useAlertStore().openWithCallback('메뉴가 저장되었습니다.', ()=>{
+            tVisible.value=false
+            emits('save:after')
+        })
     }
+}
+
+const callChildren = async () : Promise<Array<Tree>> => {
+    const param = {parentSeq: parentSeq.value}
+    const result = await useCBFetch().get<MenuData>('/api/blog/private/menu/findAll', {params: param})
+    return (result.data?.dataList || []).map(target => {
+        return {
+            uniqueSeq: target.seq,
+            name: target.title,
+            active: false
+        }
+    })
 }
 
 </script>
@@ -89,7 +118,7 @@ const articleSave = async ()=>{
             <v-container class="pa-8">
                 <v-row>
                     <v-col>
-                        <TreeTab :tree-data="treeData" v-model="parentSeq"></TreeTab>
+                        <TreeTab :tree-data="tabTreeData" v-model="parentSeq" :call-children="callChildren"></TreeTab>
                     </v-col>
                 </v-row>
                 <v-row>
@@ -112,7 +141,7 @@ const articleSave = async ()=>{
                 </v-row>
                 <v-row>
                     <v-col class="pb-6 text-center">
-                        <v-btn variant="elevated" height="45" width="80"  class="font-weight-bold text-h6" color="indigo-accent-4" @click.self.prevent="articleSave()" v-text="isEdit ? '수정' : '등록'"></v-btn>
+                        <v-btn variant="elevated" height="45" width="80" class="font-weight-bold text-h6" color="indigo-accent-4" @click.self.prevent="menuSave()" v-text="isEdit ? '수정' : '등록'"></v-btn>
                     </v-col>
                     <v-col class="pb-6 text-center">
                         <v-btn variant="elevated" height="45" width="80"  class="font-weight-bold text-h6" color="red-darken-1" @click="tVisible = false">닫기</v-btn>

@@ -21,47 +21,70 @@ definePageMeta({
 useLayoutStore().header.title = '테스트'
 
 // constant
-const userSeq : number = parseInt(useRoute().params.userSeq as string)
-
-// asyncData
-const result = await useCBFetch().get<MenuData>('/api/blog/private/menu/findAll')
-let blogList : Array<MenuData> = [];
-if (result.data?.dataList) {
-    blogList = result.data.dataList;
-}
-const dataContents = ref(blogList)
-
-// data
+// const userSeq : number = parseInt(useRoute().params.userSeq as string)
 const page = ref(5)
 const registerFlag = ref(false)
 const selectMenuSeq = ref(0)
+
+const menuListLoad = async (parentSeq? : number)=>{
+    let params = {}
+    if (parentSeq) params = {parentSeq}
+    const result = await useCBFetch().get<MenuData>('/api/blog/private/menu/findAll', {params})
+    let blogList : Array<MenuData> = [];
+    if (result.data?.dataList) {
+        blogList = result.data.dataList;
+    }
+    return blogList
+}
+
+// asyncData
+const dataContents = ref(await menuListLoad())
+
+// data
+
 
 const dataHeader = [
     {
         title: '제목',
         key: 'title',
-        print: (val: any) => val
-    },
-    {
-        title: '요약',
-        key: 'summary',
+        align: 'left',
         print: (val: any) => val
     },
     {
         title: '순서',
         key: 'menuOrder',
+        align: 'center',
         print: (val: any) => val
     },
     {
         title: '공개여부',
         key: 'publicFlag',
+        align: 'center',
         print: (val: any) => val
     }
 ]
 
 // method
-const popRegister = ()=>{
+const popRegister = (menuSeq? : number | string)=>{
+    if (menuSeq) {
+        // TODO ::  차후 공통로직으로 분기처리
+        if (typeof menuSeq === 'string') {
+            try{
+                menuSeq = parseInt(menuSeq)
+            } catch(ex) {
+                menuSeq = 0
+            }
+        }
+
+        selectMenuSeq.value = menuSeq
+    } else {
+        selectMenuSeq.value = 0
+    }
     registerFlag.value = true
+}
+
+const reloadList = async ()=>{
+    dataContents.value = await menuListLoad(selectMenuSeq.value)
 }
 
 </script>
@@ -78,8 +101,8 @@ const popRegister = ()=>{
             </thead>
             <tbody>
                 <tr v-for="content in dataContents">
-                    <td v-for="tHeader in dataHeader">
-                        <span v-text="content[tHeader.key]"></span>
+                    <td v-for="tHeader in dataHeader" class="nodrag" :class="`text-${tHeader.align}`" role="button" @dblclick="popRegister(content['seq'])">
+                        <span v-text="tHeader.print(content[tHeader.key])"></span>
                     </td>
                 </tr>
             </tbody>
@@ -87,10 +110,10 @@ const popRegister = ()=>{
         </v-table>
 
         <div class="d-flex flex-row-reverse mt-5">
-            <v-btn variant="elevated" color="deep-purple-darken-4" @click="popRegister()">등록</v-btn>
+            <v-btn variant="elevated" color="deep-purple-darken-4" @click="popRegister">등록</v-btn>
         </div>
     </div>
-    <MenuRegist v-model="registerFlag" :menu-seq="selectMenuSeq"></MenuRegist>
+    <MenuRegist v-model="registerFlag" :menuList="dataContents" :menu-seq="selectMenuSeq" @save:after="reloadList"></MenuRegist>
 </template>
 
 <style scoped>
