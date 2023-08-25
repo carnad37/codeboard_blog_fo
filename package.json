@@ -17,6 +17,7 @@
   "dependencies": {
     "@mdi/font": "^7.2.96",
     "@pinia/nuxt": "^0.4.11",
+    "monaco-editor": "^0.41.0",
     "sass": "^1.62.1",
     "vue-recaptcha": "^3.0.0-alpha.6",
     "vuetify": "^3.3.10"

@@ -10,7 +10,7 @@ import {useAlertStore} from "#imports";
 type MenuProps = {
     modelValue?: boolean  // show flag
     menuSeq: number
-    menuList?: Array<MenuData>
+    accumList: Array<Array<MenuData>>
 }
 
 const props = withDefaults(defineProps<MenuProps>(), {
@@ -24,40 +24,6 @@ const emits = defineEmits(['update:modelValue', 'save:after'])
 const menuFindAllBody = {
     menuSeq : props.menuSeq
 }
-let tabTreeData : Array<Array<Tree>> = [[]]
-if (props.menuList?.length) {
-    tabTreeData = [[...props.menuList.map(target=>{
-        return {
-            name : target.title,
-            uniqueSeq : target.seq,
-            active : false,
-            children: target?.childrenList
-        }
-    })]]
-}
-
-
-// let treeData : Array<Array<Tree>> = []
-// watch(()=>props.userSeq
-//     , async (value, oldValue) => {
-//         if (value !== oldValue && value > 0) return
-//
-//         const result = await useCBFetch().get<MenuData>('/api/blog/public/menu/findAll', {params: menuFindAllBody})
-//         const menuList = result.data?.dataList
-//
-//         if (menuList) {
-//             treeData = [
-//                 menuList.map(target=>{
-//                     return () : Tree=>({
-//                         name : target.title,
-//                         uniqueSeq : target.seq,
-//                         active : false
-//                     })
-//                 })
-//             ]
-//         }
-//     })
-
 
 // constant
 const width = 450;
@@ -77,6 +43,24 @@ const tVisible = computed({
         emits('update:modelValue', val)
     }
 })
+
+const currentTreeArray = computed(()=>{
+    let result : Tree[][] = []
+    for (const tTreeList of props.accumList || []) {
+        let innerArray : Tree[] = []
+        for (const target of tTreeList) {
+            innerArray.push({
+                name : target.title,
+                uniqueSeq : target.seq,
+                active : false,
+                children: target?.childrenList
+            })
+        }
+        result.push(innerArray)
+    }
+    return result
+})
+
 
 // data
 const title = ref('')
@@ -118,7 +102,7 @@ const callChildren = async () : Promise<Array<Tree>> => {
             <v-container class="pa-8">
                 <v-row>
                     <v-col>
-                        <TreeTab :tree-data="tabTreeData" v-model="parentSeq" :call-children="callChildren"></TreeTab>
+                        <TreeTab :tree-data="currentTreeArray" v-model="parentSeq" :call-children="callChildren"></TreeTab>
                     </v-col>
                 </v-row>
                 <v-row>

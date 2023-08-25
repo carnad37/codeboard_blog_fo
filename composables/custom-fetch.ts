@@ -26,15 +26,20 @@ export const useCBFetch = ()=> {
 
 const commonLogic = async <ResT> (path : string, method : RouterMethod, param? : UseFetchOptions<ResT>) => {
     try {
-        console.log(param)
         if (!param) {
-            console.log("check empty")
             param = {}
         }
         param.method = method
         if (!process.dev) param.baseURL = useRuntimeConfig().public.baseURL;
 
-        const result : _AsyncData<CommonResponse<ResT> | any, FetchError<any> | null> = param ? await useFetch(path, param) : await useFetch(path)
+        const result : _AsyncData<CommonResponse<ResT> | any, FetchError<ResT> | null> = param ? await useFetch(path, param) : await useFetch(path)
+
+        if (result.error.value) {
+            // error checker
+            useAlertStore().open(COMMON.API.ERROR.NETWORK_FAIL)
+            return {success: false, data : null, error : null, refresh : null, pending : null, execute : null}
+        }
+
         const resultData : CommonResponse<ResT> | null = result.data.value
         const success = resultData?.httpCode === 200 && resultData?.errorCode === COMMON.API.SUCCESS.CODE
         if (resultData?.alertFlag) {

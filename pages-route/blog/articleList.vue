@@ -40,8 +40,6 @@ const popRegister = ()=>{
     registerFlag.value = true
 }
 
-
-
 </script>
 
 <template>

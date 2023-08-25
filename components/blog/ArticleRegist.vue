@@ -6,6 +6,8 @@ import {LoginResponse} from "~/composables/user-auth";
 import {VForm} from "vuetify/components/VForm";
 import {WritableComputedRef} from "@vue/reactivity";
 import {ArticleData} from "~/composables/common-interface";
+import HtmlEditor from "~/components/common/HtmlEditor.vue";
+import EditorCode from "~/components/common/EditorCode.vue";
 
 // props
 interface Props {
@@ -20,7 +22,6 @@ const props = withDefaults(defineProps<Props>(), {
 const emits = defineEmits(['update:modelValue'])
 
 // constant
-const width = 450;
 
 // refs
 const form = ref<VForm|null>(null)
@@ -59,8 +60,8 @@ const articleSave = async ()=>{
 </script>
 
 <template>
-    <v-dialog :max-width="width" class="mx-auto" v-model="tVisible" :persistent="true">
-        <v-card>
+    <v-dialog class="mx-auto article-editor" v-model="tVisible" :persistent="true">
+        <v-card :style="{overflow : 'visible'}">
             <v-form ref="form">
             <v-container class="pa-8">
                 <v-row>
@@ -74,8 +75,18 @@ const articleSave = async ()=>{
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col>
-                        <v-textarea variant="outlined" label="내용" v-model="content" :clearable="true"></v-textarea>
+                    <v-col style="height: 100%">
+                        <v-textarea variant="outlined" v-model="summary" :clearable="true"></v-textarea>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-divider class="ma-3" :style="{'border-color': 'black', 'opacity' : '1'}" thickness="2">텍스트</v-divider>
+                </v-row>
+                <v-row>
+                    <v-col style="height: 100%">
+                        <div class="my-2 border-sm rounded-s overflow-hidden" :style="{'border-color' : 'gray !important', 'opacity' : '1'}">
+                            <EditorCode v-model="content"></EditorCode>
+                        </div>
                     </v-col>
                 </v-row>
                 <v-row>
@@ -92,6 +103,18 @@ const articleSave = async ()=>{
     </v-dialog>
 </template>
 
-<style scoped>
+<style>
+.article-editor {
+    width: 80%;
+}
+@media screen and (max-width: 900px) {
+    .article-editor {
+        width: 100%;
+        .v-overlay__content {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
+}
 
 </style>

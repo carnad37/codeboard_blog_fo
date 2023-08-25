@@ -2552,6 +2552,11 @@
     "pkg-types" "^1.0.3"
     "ufo" "^1.1.2"
 
+"monaco-editor@^0.41.0":
+  "integrity" "sha512-1o4olnZJsiLmv5pwLEAmzHTE/5geLKQ07BrGxlF4Ri/AXAc2yyDGZwHjiTqD8D/ROKUZmwMA28A+yEowLNOEcA=="
+  "resolved" "https://registry.npmjs.org/monaco-editor/-/monaco-editor-0.41.0.tgz"
+  "version" "0.41.0"
+
 "mri@^1.2.0":
   "integrity" "sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA=="
   "resolved" "https://registry.npmjs.org/mri/-/mri-1.2.0.tgz"

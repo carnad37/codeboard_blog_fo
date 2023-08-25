@@ -27,8 +27,7 @@ const registerFlag = ref(false)
 const selectMenuSeq = ref(0)
 
 const menuListLoad = async (parentSeq? : number)=>{
-    let params = {}
-    if (parentSeq) params = {parentSeq}
+    let params = {parentSeq}
     const result = await useCBFetch().get<MenuData>('/api/blog/private/menu/findAll', {params})
     let blogList : Array<MenuData> = [];
     if (result.data?.dataList) {
@@ -38,11 +37,10 @@ const menuListLoad = async (parentSeq? : number)=>{
 }
 
 // asyncData
-const dataContents = ref(await menuListLoad())
+const dataContents = ref(await menuListLoad(selectMenuSeq.value))
+const accumContents = ref([JSON.parse(JSON.stringify(dataContents.value))])
 
 // data
-
-
 const dataHeader = [
     {
         title: '제목',
@@ -84,6 +82,8 @@ const popRegister = (menuSeq? : number | string)=>{
 }
 
 const reloadList = async ()=>{
+    // 최상위로 이동후 새로고침
+    selectMenuSeq.value = 0
     dataContents.value = await menuListLoad(selectMenuSeq.value)
 }
 
@@ -101,8 +101,11 @@ const reloadList = async ()=>{
             </thead>
             <tbody>
                 <tr v-for="content in dataContents">
-                    <td v-for="tHeader in dataHeader" class="nodrag" :class="`text-${tHeader.align}`" role="button" @dblclick="popRegister(content['seq'])">
-                        <span v-text="tHeader.print(content[tHeader.key])"></span>
+                    <td v-for="tHeader in dataHeader" class="nodrag" :class="`text-${tHeader.align}`" :role="tHeader.key === 'title' ? 'button' : ''" @dblclick="popRegister(content['seq'])">
+                        <span v-html="tHeader.print(content[tHeader.key])"></span>
+                    </td>
+                    <td>
+                        <v-btn variant="elevated" color="deep-purple-darken-4" @click="popRegister">수정</v-btn>
                     </td>
                 </tr>
             </tbody>
@@ -113,7 +116,7 @@ const reloadList = async ()=>{
             <v-btn variant="elevated" color="deep-purple-darken-4" @click="popRegister">등록</v-btn>
         </div>
     </div>
-    <MenuRegist v-model="registerFlag" :menuList="dataContents" :menu-seq="selectMenuSeq" @save:after="reloadList"></MenuRegist>
+    <MenuRegist v-model="registerFlag" :accumList="accumContents" :menu-seq="selectMenuSeq" @save:after="reloadList"></MenuRegist>
 </template>
 
 <style scoped>
