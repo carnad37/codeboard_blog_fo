@@ -29,7 +29,6 @@ export const useMonacoEditor = defineStore('monaco-store', ()=>{
             if (result) {
                 result.onDidChangeModelContent(contentCallback)
                 onBeforeUnmount(()=>{
-                    console.log("dispose!!")
                     result.dispose()
                 })
                 return result

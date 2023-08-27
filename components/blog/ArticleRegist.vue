@@ -8,6 +8,7 @@ import {WritableComputedRef} from "@vue/reactivity";
 import {ArticleData} from "~/composables/common-interface";
 import HtmlEditor from "~/components/common/HtmlEditor.vue";
 import EditorCode from "~/components/common/EditorCode.vue";
+import EditorSelector from "~/components/common/EditorSelector.vue";
 
 // props
 interface Props {
@@ -60,8 +61,8 @@ const articleSave = async ()=>{
 </script>
 
 <template>
-    <v-dialog class="mx-auto article-editor" v-model="tVisible" :persistent="true">
-        <v-card :style="{overflow : 'visible'}">
+    <v-dialog class="mx-auto my-auto article-editor" height="400px" v-model="tVisible" :persistent="true">
+        <v-card>
             <v-form ref="form">
             <v-container class="pa-8">
                 <v-row>
@@ -75,20 +76,21 @@ const articleSave = async ()=>{
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col style="height: 100%">
-                        <v-textarea variant="outlined" v-model="summary" :clearable="true"></v-textarea>
-                    </v-col>
-                </v-row>
-                <v-row>
                     <v-divider class="ma-3" :style="{'border-color': 'black', 'opacity' : '1'}" thickness="2">텍스트</v-divider>
                 </v-row>
                 <v-row>
-                    <v-col style="height: 100%">
-                        <div class="my-2 border-sm rounded-s overflow-hidden" :style="{'border-color' : 'gray !important', 'opacity' : '1'}">
-                            <EditorCode v-model="content"></EditorCode>
-                        </div>
+                    <v-col>
+                        <EditorSelector></EditorSelector>
                     </v-col>
                 </v-row>
+<!--                <v-row>-->
+<!--                    <v-col style="height: 100%">-->
+<!--                        &lt;!&ndash;/* 에디터가 출력되는 부분. select box가 같이 출력되며 해당 셀렉박스 변경에따라 에디터가 변경되어야함. 컴포넌트로 따로 빼는게 상태관리상 편할듯 */&ndash;&gt;-->
+<!--                        <div class="my-2 border-sm rounded-s overflow-hidden" :style="{'border-color' : 'gray !important', 'opacity' : '1'}">-->
+<!--                            <EditorCode v-model="content"></EditorCode>-->
+<!--                        </div>-->
+<!--                    </v-col>-->
+<!--                </v-row>-->
                 <v-row>
                     <v-col class="pb-6 text-center">
                         <v-btn variant="elevated" height="45" width="80"  class="font-weight-bold text-h6" color="indigo-accent-4" @click.self.prevent="articleSave()" v-text="isEdit ? '수정' : '등록'"></v-btn>

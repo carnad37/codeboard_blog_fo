@@ -21,7 +21,8 @@ onMounted(()=>{
         editor = useMonacoEditor().create(editorTag.value, ()=>{
             emits('update:modelValue', editor?.getValue())
         }, {
-            language: 'java'
+          language: 'java',
+          theme: 'vs-dark'
         })
     }
 })

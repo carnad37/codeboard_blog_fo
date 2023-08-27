@@ -14,6 +14,13 @@ export enum MenuType {
     , MENU = 'M'
 }
 
+export enum EditorType {
+    TextArea = 'TA'
+    , CodeEditor = 'CE'
+    , HTMLEditor = 'HE' // WYSIWYG
+    , MarkdownEditor = 'ME'
+    // 차후 추가
+}
 
 
 export interface HeaderSetting {
@@ -52,3 +59,4 @@ export interface MenuData {
     uuid?: string
     childrenList?: Array<MenuData>
 }
+
