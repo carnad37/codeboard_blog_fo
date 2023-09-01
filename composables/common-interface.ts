@@ -4,6 +4,13 @@ import {integer} from "vscode-languageserver-types";
 //     header: HeaderSetting
 //     footer: FooterSetting
 // }
+
+export enum UserAuth {
+    MEMBER = 'M',
+    ADMIN = 'A',
+    ANONYMOUS = ''
+}
+
 export enum YN {
     Y = 'Y'
     , N = 'N'
@@ -22,6 +29,17 @@ export enum EditorType {
     // 차후 추가
 }
 
+export enum EditorCodeLang {
+    HTML = 'html',
+    CSS = 'css',
+    SCSS = 'scss',
+    JAVASCRIPT = 'javascript',
+    TYPESCRIPT = 'typescript',
+    JAVA = 'java',
+    MYSQL = 'mysql',
+    POSTGRESQL = 'pg',
+    PYTHON = 'python'
+}
 
 export interface HeaderSetting {
     title: string
@@ -40,10 +58,17 @@ export interface CommonAlert {
     callback : Function
 }
 
+export interface ArticleContent {
+    seq?: number
+    articleSeq?: number
+    content : string
+    editor : EditorType
+}
+
 export interface ArticleData {
     seq: number
     title: string
-    content: string
+    contents: Array<ArticleContent>
     summary: string
     publicFlag?: YN
     boardSeq?: number
@@ -60,3 +85,8 @@ export interface MenuData {
     childrenList?: Array<MenuData>
 }
 
+export interface SaveForm<T> {
+    insert: T[]
+    update: T[]
+    delete: T[]
+}

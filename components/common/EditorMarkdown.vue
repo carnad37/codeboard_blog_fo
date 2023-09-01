@@ -1,6 +1,4 @@
 <script setup lang="ts">
-
-
 import {Editor} from "@toast-ui/editor";
 
 interface Props {
@@ -12,8 +10,6 @@ const props = withDefaults(defineProps<Props>(), {
     modelValue: '',
     loadCallback: ()=>{}
 })
-
-
 
 const emits = defineEmits(['update:modelValue'])
 
@@ -28,6 +24,7 @@ const contents = computed({
 
 const editorTag : Ref<HTMLElement | null> = ref(null)
 let editor : Editor | null = null
+let firstFlag = true
 
 onMounted(()=>{
     if (editorTag.value) {
@@ -38,22 +35,20 @@ onMounted(()=>{
             initialValue: contents.value,
             events: {
                 change: ()=>{
-                    contents.value = editor?.getHTML() || ''
+                    contents.value = editor?.getMarkdown() || ''
                 },
-                load: ()=>{
-                    props.loadCallback()
-                },
+                focus:()=>{
+                    if (firstFlag) {
+                        firstFlag = false
+                        props.loadCallback()
+                    }
+                }
             },
-            autofocus: true
-
+            autofocus: true,
         });
     }
 })
-onUpdated(()=>{
-    nextTick(()=>{
-        console.log('final')
-    })
-})
+
 onBeforeUnmount(()=>{
     editor?.destroy()
 })

@@ -1,23 +1,18 @@
 <script setup lang="ts">
 
-import {CommonResponse, useCBFetch} from "~/composables/custom-fetch";
-import {COMMON} from "~/constants/common/common";
-import {LoginResponse} from "~/composables/user-auth";
+import {useCBFetch} from "~/composables/custom-fetch";
 import {VForm} from "vuetify/components/VForm";
-import {WritableComputedRef} from "@vue/reactivity";
-import {ArticleData} from "~/composables/common-interface";
-import HtmlEditor from "~/components/common/HtmlEditor.vue";
-import EditorCode from "~/components/common/EditorCode.vue";
+import {ArticleContent, ArticleData, EditorType} from "~/composables/common-interface";
 import EditorSelector from "~/components/common/EditorSelector.vue";
+import {useAlertStore} from "#imports";
 
 // props
 interface Props {
     modelValue?: boolean
-    articleData: ArticleData | null
+    articleData?: ArticleData
 }
 const props = withDefaults(defineProps<Props>(), {
     modelValue: false,
-    articleData: null
 })
 
 const emits = defineEmits(['update:modelValue'])
@@ -29,7 +24,7 @@ const form = ref<VForm|null>(null)
 
 // reactive
 const isEdit = computed(()=>{
-    return props.articleData !== null
+    return !!props.articleData
 })
 const tVisible = computed({
     get() {
@@ -41,14 +36,19 @@ const tVisible = computed({
 })
 
 // data
-const title = ref('')
-const summary = ref('')
-const content = ref('')
+const title = ref(isEdit ? props.articleData?.title : '' )
+const summary = ref(isEdit ? props.articleData?.summary : '' )
+const initContent :ArticleContent = {
+    articleSeq: 0,
+    content: '',
+    editor: EditorType.TextArea
+}
+const contents = ref(isEdit ? props.articleData?.contents || [initContent] : [initContent])
 
 // method
 const articleSave = async ()=>{
     if (await useValidateForm(form)) {
-        const param = {title: title.value, summary: summary.value, content: content.value}
+        const param = {title: title.value, summary: summary.value, contents : contents.value}
         const result = await useCBFetch().post<ArticleData>('/api/blog/private/article/save', {body: param})
         // let responseArticle = new ArticleData();
         // if (result.data?.data) {
@@ -58,10 +58,43 @@ const articleSave = async ()=>{
     }
 }
 
+const addEditor = (index : number)=>{
+    const targetList = contents.value
+    targetList.splice(index + 1, 0, {
+        articleSeq: isEdit.value ? props.articleData?.seq || 0 : 0,
+        content: '',
+        editor: EditorType.TextArea
+    })
+}
+const delEditor = (index : number)=>{
+    if (contents.value?.length > 1) {
+        contents.value.splice(index, 1)
+    } else {
+        useAlertStore().open('콘텐츠는 하나이상 입력되어야합니다.')
+    }
+}
+const movePrev = (idx : number)=>{
+    const targetList = contents.value
+    if (targetList?.length > 1 && idx !== 0) {
+        const keep = targetList[idx - 1]
+        targetList[idx - 1] = targetList[idx]
+        targetList[idx] = keep
+    }
+}
+const moveNext = (idx : number)=>{
+    const targetList = contents.value
+    if (targetList?.length > 1 && contents.value.length - 1 !== idx) {
+        const keep = targetList[idx + 1]
+        targetList[idx + 1] =  targetList[idx]
+        targetList[idx] = keep
+    }
+}
+
+
 </script>
 
 <template>
-    <v-dialog class="mx-auto my-auto article-editor" height="400px" v-model="tVisible" :persistent="true">
+    <v-dialog class="mx-auto my-auto article-editor" v-model="tVisible" :persistent="true">
         <v-card>
             <v-form ref="form">
             <v-container class="pa-8">
@@ -78,19 +111,22 @@ const articleSave = async ()=>{
                 <v-row>
                     <v-divider class="ma-3" :style="{'border-color': 'black', 'opacity' : '1'}" thickness="2">텍스트</v-divider>
                 </v-row>
-                <v-row>
+                <v-row v-for="(item, cIdx) in contents" :key="`editor-selector-${cIdx}`">
                     <v-col>
-                        <EditorSelector></EditorSelector>
+                        <EditorSelector
+                            v-model:editor-type="item.editor"
+                            v-model="item.content"
+                            :editor-index="cIdx"
+                            :key="`editor_${item.seq || 0}_${cIdx}`"
+                            @add-editor="addEditor(cIdx)"
+                            @del-editor="delEditor(cIdx)"
+                            @move-prev="movePrev(cIdx)"
+                            @move-next="moveNext(cIdx)"
+                            :is-first="cIdx === 0"
+                            :is-last="contents.length - 1 === cIdx"
+                        />
                     </v-col>
                 </v-row>
-<!--                <v-row>-->
-<!--                    <v-col style="height: 100%">-->
-<!--                        &lt;!&ndash;/* 에디터가 출력되는 부분. select box가 같이 출력되며 해당 셀렉박스 변경에따라 에디터가 변경되어야함. 컴포넌트로 따로 빼는게 상태관리상 편할듯 */&ndash;&gt;-->
-<!--                        <div class="my-2 border-sm rounded-s overflow-hidden" :style="{'border-color' : 'gray !important', 'opacity' : '1'}">-->
-<!--                            <EditorCode v-model="content"></EditorCode>-->
-<!--                        </div>-->
-<!--                    </v-col>-->
-<!--                </v-row>-->
                 <v-row>
                     <v-col class="pb-6 text-center">
                         <v-btn variant="elevated" height="45" width="80"  class="font-weight-bold text-h6" color="indigo-accent-4" @click.self.prevent="articleSave()" v-text="isEdit ? '수정' : '등록'"></v-btn>
@@ -108,6 +144,7 @@ const articleSave = async ()=>{
 <style>
 .article-editor {
     width: 80%;
+    height: 80%;
 }
 @media screen and (max-width: 900px) {
     .article-editor {
@@ -118,5 +155,15 @@ const articleSave = async ()=>{
         }
     }
 }
+@media screen and (max-width: 600px) {
+    .article-editor {
+        height: 100vh;
+        .v-overlay__content {
+            max-height: 100%;
+            margin: 0;
+        }
+    }
+}
+
 
 </style>

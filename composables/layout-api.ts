@@ -41,7 +41,6 @@ export const useAlertStore = defineStore('alert-store', ()=>{
     const open = (message : string)=> {
         alert.message = message
         alert.visible = true
-        // alert.callback = ()=>{}
     }
 
     const openWithCallback = (message : string, callback : Function)=> {
@@ -56,7 +55,7 @@ export const useAlertStore = defineStore('alert-store', ()=>{
     }
 
     return {
-        alert : alert
+        alert
         , open
         , openWithCallback
         , close

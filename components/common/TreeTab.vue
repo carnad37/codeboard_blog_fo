@@ -11,6 +11,7 @@ export interface Tree {
 type Props = {
     treeData: Array<Array<Tree>>
     modelValue: number
+    isLock : boolean
     callChildren: ()=>Array<Tree> | Promise<Array<Tree>>
 }
 
@@ -20,6 +21,7 @@ const emit = defineEmits(['update:modelValue'])
 const props = withDefaults(defineProps<Props>(), {
     treeData: ()=>[],
     modelValue: 0,
+    isLock : false,
     callChildren: ()=>{return []}
 })
 
@@ -51,7 +53,11 @@ if (!emptyTreeData) {
     const tTree = lastArray.filter(tTree=>tTree.uniqueSeq == selectUniqueSeq.value).pop()
     if (!tTree) {
         selectUniqueSeq.value = lastArray[0].uniqueSeq
+    } else {
+        tTree.active = true
     }
+} else {
+    selectTab.value = 0
 }
 process.push(...props.treeData)
 
@@ -96,6 +102,8 @@ const menuDepthStyle = (depth:number)=>{
 }
 
 const menuDepthClick = (depth:number)=>{
+    if (props.isLock) return
+
     if (depth < selectTab.value) {
         // 이하 정보는 모두 삭제한다
         selectTreeData.value = selectTreeData.value.slice(0, depth + 1)
@@ -104,12 +112,16 @@ const menuDepthClick = (depth:number)=>{
 }
 
 const menuUnitClick = (selectTree : Tree)=>{
+    if (props.isLock) return
+
     selectUniqueSeq.value = selectTree.uniqueSeq
 
     selectTreeData.value[selectTab.value].forEach(target=>target.active=false)
     selectTree.active = true
 }
 const menuUnitDbClick = async (selectTree : Tree)=>{
+    if (props.isLock) return
+
     const result = selectTab.value + 1
     let childrenList : Array<Tree> | undefined = undefined
     if (selectTree.children?.length) {

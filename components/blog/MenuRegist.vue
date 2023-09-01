@@ -3,14 +3,14 @@
 import {useCBFetch} from "~/composables/custom-fetch";
 import {VForm} from "vuetify/components/VForm";
 import TreeTab, {Tree} from "~/components/common/TreeTab.vue";
-import {MenuData} from "~/composables/common-interface";
 import {useAlertStore} from "#imports";
+import {MenuData} from "@/constants/common/common.ts";
 
 // props
 type MenuProps = {
     modelValue?: boolean  // show flag
     menuSeq: number
-    accumList: Array<Array<MenuData>>
+    accumList: MenuData[][]
 }
 
 const props = withDefaults(defineProps<MenuProps>(), {
@@ -92,7 +92,6 @@ const callChildren = async () : Promise<Array<Tree>> => {
         }
     })
 }
-
 </script>
 
 <template>
@@ -102,7 +101,7 @@ const callChildren = async () : Promise<Array<Tree>> => {
             <v-container class="pa-8">
                 <v-row>
                     <v-col>
-                        <TreeTab :tree-data="currentTreeArray" v-model="parentSeq" :call-children="callChildren"></TreeTab>
+                        <TreeTab :tree-data="currentTreeArray" v-model="parentSeq" :is-lock="isEdit" :call-children="callChildren"></TreeTab>
                     </v-col>
                 </v-row>
                 <v-row>
