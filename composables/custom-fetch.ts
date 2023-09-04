@@ -30,6 +30,7 @@ const commonLogic = async <ResT> (path : string, method : RouterMethod, param? :
             param = {}
         }
         param.method = method
+        param.credentials = 'include'
         if (!process.dev) param.baseURL = useRuntimeConfig().public.baseURL;
 
         const result : _AsyncData<CommonResponse<ResT> | any, FetchError<ResT> | null> = param ? await useFetch(path, param) : await useFetch(path)
