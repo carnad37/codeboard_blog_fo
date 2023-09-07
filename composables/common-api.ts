@@ -19,7 +19,6 @@ export const useRecaptcha = (callback : (token:string) => void)=>{
         // @ts-ignore
         grecaptcha.execute(useRuntimeConfig().public.custom.config.recatpchaKey, {action: 'submit'})
             .then(function(token : string) {
-                console.log(token)
                 callback(token)
             }
         );

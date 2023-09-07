@@ -1,11 +1,11 @@
 <script setup lang="ts">
 
-import {ArticleContent, EditorType, SaveFormStatus} from "~/composables/common-interface";
+import {ArticleContent, EditorCodeLang, EditorType} from "~/composables/common-interface";
 import EditorCode from "~/components/common/EditorCode.vue";
 import EditorMarkdown from "~/components/common/EditorMarkdown.vue";
 
 type Props = {
-    editor : ArticleContent
+    modelValue? : ArticleContent
     editorType? : EditorType
     isVisibleSelect? : boolean
     isFirst? : boolean
@@ -24,23 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
     isLast: false
 })
 
-// constant
-const emits = defineEmits(['update:editorType', 'addEditor', 'delEditor', 'movePrev', 'moveNext'])
-const oriEditorType = props.editor.editor
-const oriContents = props.editor.content
-const oriOrder = props.editor.contentOrder
-
-// 추가된 컨텐츠는 타겟으로 잡지않음
-if (props.editor.status !== SaveFormStatus.insert) {
-    watch(()=>oriOrder !== props.editor.contentOrder
-            && oriContents !== props.editor.content
-            && oriEditorType !== props.editor.editor
-        , async (value) => {
-            // 해당값이 참일경우 변경상태라는 의미
-            props.editor.status = value ? SaveFormStatus.update : undefined
-        }
-    )
-}
+const emits = defineEmits(['update:modelValue', 'update:editorType', 'addEditor', 'delEditor', 'movePrev', 'moveNext'])
 
 // data
 const typeSelectBox : Ref<HTMLElement | null> = ref(null)
@@ -66,20 +50,17 @@ const selectLang = ref('html')
 // computed
 const contents = computed({
     get() {
-        return props.editor.content
+        return props.modelValue
     },
     set(val) {
-        if (props.editor && val) {
-            props.editor.content = val
-        }
+        emits('update:modelValue', val)
     }
 })
 
-
 const editorType = computed({
     get() {
-        if (props.editor) {
-            return props.editor.editor
+        if (props.editorType) {
+            return props.editorType
         } else {
             return internalType.value
         }
@@ -91,16 +72,13 @@ const editorType = computed({
                 typeSelectBox.value.scrollIntoView({behavior:'smooth'})
             }
         }
-        if (props.editor) {
-            props.editor.editor = val
+        if (props.editorType) {
+            emits('update:editorType', val)
         } else {
             internalType.value = val
         }
     }
 })
-
-// @move-prev="movePrev(cIdx)"
-// @move-next="moveNext(cIdx)"
 
 const loadCallback = ()=>{
     typeSelectBox.value?.scrollIntoView({behavior:'smooth'})

@@ -39,3 +39,31 @@
 </pre>
 4. 그냥 쌩으로 가져다쓰기
 : @types만 정의해서 말그대로 쌩으로 가져다쓰기... 가장 무식하지만 심플한 방법.
+
+## API 요청 도메인과 현재 사이트 도메인이 다를경우
+
+1. CORS에 허용해주어야한다. API 도메인, 사이트 도메인에서 서로 허용이되어있지않으면 결과를 받아오더라도 브라우저가 해당 값을 차단해버린다.
+<pre>
+  add_header 'Access-Control-Allow-Origin' "${scheme}://{도메인명}" always;
+</pre>
+
+2. credentials설정을 사용가능하게 설정해준다.
+* 백엔드
+<pre>
+   // https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
+   // Access-Control-Allow-Credentials 는 credentials가 include설정 가능여부를 허가해주는것.
+   // 프론트엔드 작업전에 필수적이다.
+   add_header 'Access-Control-Allow-Credentials' 'true';
+</pre>
+* 프론트엔드
+<pre>
+   // Nuxt3기준으로는 UseFetchOptions에 credentials값을 설정해준다
+   const options : UseFetchOptions<ResT> = {}
+
+   // https://developer.mozilla.org/ko/docs/Web/API/Request/credentials
+   // default는 same-origin이다. 현재 도메인과 api도메인이 같은경우만 쿠키값을 전송한다.
+   // cross domain을 허용하고싶으면 include로 설정
+   // cookie 전송 자체를 막고싶으면 omit으로 설정하면된다.
+   options.credentials = 'include'
+</pre>
+

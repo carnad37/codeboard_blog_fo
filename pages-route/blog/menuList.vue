@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import {MenuType, YN} from "~/composables/common-interface";
+import {MenuData, MenuType, YN} from "~/composables/common-interface";
 import MenuRegist from "~/components/blog/MenuRegist.vue";
 import {SymbolKind} from "vscode-languageserver-types";
 import Array = SymbolKind.Array;
-export interface MenuData {
-    seq: number
-    title: string
-    menuOrder: string
-    uuid: string
-    publicFlag?: YN
-    menuType?: MenuType
-    categorySeq?: number
-}
+import {useCBFetch} from "~/composables/custom-fetch";
+// export interface MenuData {
+//     seq: number
+//     title: string
+//     menuOrder: string
+//     uuid: string
+//     publicFlag?: YN
+//     menuType?: MenuType
+//     categorySeq?: number
+// }
 
 definePageMeta({
     layout: 'menu-layout',
@@ -24,10 +25,18 @@ useLayoutStore().header.title = '테스트'
 // const userSeq : number = parseInt(useRoute().params.userSeq as string)
 const page = ref(5)
 const registerFlag = ref(false)
-const selectMenuSeq = ref(0)
+const initMenu : MenuData = {
+  seq : 0,
+  menuOrder : 0,
+  title : '',
+  uuid : ''
+}
+const selectMenu = ref(initMenu)
 
-const menuListLoad = async (parentSeq? : number) : Promise<MenuData[]>=>{
-    let params = {parentSeq}
+// method
+const menuListLoad = async () : Promise<MenuData[]>=>{
+    const targetSeq = parentSeqArray.value[parentSeqArray.value.length - 1]
+    let params = {parentSeq : targetSeq}
     const result = await useCBFetch().get<MenuData>('/api/blog/private/menu/findAll', {params})
     let blogList : Array<MenuData> = [];
     if (result.data?.dataList) {
@@ -36,10 +45,44 @@ const menuListLoad = async (parentSeq? : number) : Promise<MenuData[]>=>{
     return blogList
 }
 
-// asyncData
-const typeData : MenuData[] = []
-const dataContents = ref(await menuListLoad(selectMenuSeq.value))
-const accumContents = ref([JSON.parse(JSON.stringify(dataContents))])
+// method
+const popRegister = (content : MenuData)=>{
+    if (content) {
+        // TODO ::  차후 공통로직으로 분기처리
+        selectMenu.value = content
+    } else {
+        selectMenu.value = content
+    }
+    registerFlag.value = true
+}
+
+const reloadList = async ()=>{
+    dataContents.value = await menuListLoad()
+    accumContents.value = [JSON.parse(JSON.stringify(dataContents.value))]
+}
+
+const moveChildrenMenu = async (parentSeq : number)=>{
+    const param = {parentSeq}
+    const result = await useCBFetch().get<MenuData>('/api/blog/private/menu/findAll', {params: param})
+    const resultList = result.data?.dataList || []
+
+    parentSeqArray.value.push(parentSeq)
+    dataContents.value = resultList
+    accumContents.value.push(JSON.parse(JSON.stringify(resultList)))
+}
+
+const moveParentMenu = async ()=>{
+    if (parentSeqArray.value.length < 2) return
+
+    parentSeqArray.value = parentSeqArray.value.slice(0, parentSeqArray.value.length - 1)
+    await reloadList()
+}
+
+// created
+const parentSeqArray = ref([0])
+const dataContents = ref([] as MenuData[])
+const accumContents = ref(dataContents.value)
+reloadList()
 
 // data
 const dataHeader = [
@@ -63,68 +106,29 @@ const dataHeader = [
     }
 ]
 
-// method
-const popRegister = (content : MenuData)=>{
-    if (content) {
-        // TODO ::  차후 공통로직으로 분기처리
-        if (typeof menuSeq === 'string') {
-            try{
-                menuSeq = parseInt(menuSeq)
-            } catch(ex) {
-                menuSeq = 0
-            }
-        }
-
-        selectMenuSeq.value = menuSeq
-    } else {
-        selectMenuSeq.value = 0
-    }
-    registerFlag.value = true
-}
-
-const reloadList = async ()=>{
-    // 최상위로 이동후 새로고침
-    selectMenuSeq.value = 0
-    dataContents.value = await menuListLoad(selectMenuSeq.value)
-    accumContents.value = [JSON.parse(JSON.stringify(dataContents.value))]
-}
-
-interface TestType {
-    seq : number
-    main : string
-}
-const test : TestType = {
-    seq : 1,
-    main : ''
-}
-const testD : TestType[] = [test, test]
-const testData = reactive({
-  innerArray : testD
-})
-
-// for (const tTarget in testData.value) {
-//     tTarget.
-// }
-
-
 
 </script>
 
 <template>
     <div id="main-post" class="content">
+        <v-btn @click="moveParentMenu" v-text="'뒤로가기'"></v-btn>
         <v-table>
             <thead>
-                <tr v-for="tData in testData">
-                    <span v-text="tData"></span>
+                <tr>
                     <th scope="col" v-for="tHeader in dataHeader">
                         <span v-text="tHeader.title"></span>
                     </th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(content, idx) in dataContents">
-                    <td v-for="tHeader in dataHeader" class="nodrag" :class="`text-${tHeader.align}`" :role="tHeader.key === 'title' ? 'button' : ''" @dblclick="popRegister(content['seq'])">
+                    <td v-for="tHeader in dataHeader" class="nodrag" :class="`text-${tHeader.align}`" :role="tHeader.key === 'title' ? 'button' : ''" @dblclick="moveChildrenMenu(content.seq)">
                         <span v-html="tHeader.print(content[tHeader.key])"></span>
+                    </td>
+                    <td>
+                        <v-btn variant="elevated" color="deep-purple-darken-4" @click="useRouter().push({path : `/article/${content.seq}/list`})">게시물</v-btn>
                     </td>
                     <td>
                         <v-btn variant="elevated" color="deep-purple-darken-4" @click="popRegister(content)">수정</v-btn>
@@ -135,10 +139,10 @@ const testData = reactive({
         </v-table>
 
         <div class="d-flex flex-row-reverse mt-5">
-            <v-btn variant="elevated" color="deep-purple-darken-4" @click="popRegister">등록</v-btn>
+            <v-btn variant="elevated" color="deep-purple-darken-4" @click="popRegister">메뉴 등록</v-btn>
         </div>
     </div>
-    <MenuRegist v-model="registerFlag" :accumList="accumContents" :menu-seq="selectMenuSeq" @save:after="reloadList"></MenuRegist>
+    <MenuRegist v-model="registerFlag" :accumList="accumContents" :menu="selectMenu" @save:after="reloadList"></MenuRegist>
 </template>
 
 <style scoped>

@@ -56,7 +56,6 @@ const join = async (token:string)=>{
         const bodyParam = {email: email.value, passwd: passwd.value, nickname: nickname.value, token: token}
         const response = await useCBFetch().post<LoginResponse>('/api/member/public/user/save', {body : bodyParam})
         const responseData = response.data;
-        console.log(responseData)
         if (responseData?.errorCode !== COMMON.API.SUCCESS.CODE && responseData?.alertFlag) {
             // 실패 and alert
             useAlertStore().open(responseData.message)
@@ -69,7 +68,6 @@ const join = async (token:string)=>{
 
 const joinClick = async ()=>{
     useRecaptcha((token)=>{
-        console.log("test : " + token)
         join(token);
     });
 }

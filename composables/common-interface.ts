@@ -5,6 +5,8 @@ import {integer} from "vscode-languageserver-types";
 //     footer: FooterSetting
 // }
 
+// ======== ENUM ========
+
 export enum UserAuth {
     MEMBER = 'M',
     ADMIN = 'A',
@@ -41,6 +43,19 @@ export enum EditorCodeLang {
     PYTHON = 'python'
 }
 
+export enum SaveFormStatus {
+    insert = 'insert', update = 'update', delete = 'delete'
+}
+
+
+// ======== INTERFACE ========
+
+export interface PageData {
+    pageIndex : number
+    contentSize : number
+    pageSize : number
+}
+
 export interface HeaderSetting {
     title: string
     visible : boolean
@@ -63,6 +78,8 @@ export interface ArticleContent {
     articleSeq?: number
     content : string
     editor : EditorType
+    status? : SaveFormStatus
+    contentOrder? : number
 }
 
 export interface ArticleData {

@@ -4,26 +4,27 @@ import {useCBFetch} from "~/composables/custom-fetch";
 import {VForm} from "vuetify/components/VForm";
 import TreeTab, {Tree} from "~/components/common/TreeTab.vue";
 import {useAlertStore} from "#imports";
-import {MenuData} from "@/constants/common/common.ts";
+import {MenuData} from "~/composables/common-interface";
 
 // props
 type MenuProps = {
     modelValue?: boolean  // show flag
-    menuSeq: number
+    menu: MenuData
     accumList: MenuData[][]
 }
 
 const props = withDefaults(defineProps<MenuProps>(), {
     modelValue: false,
-    menuSeq: 0
+    menu : ()=>{
+      return {
+        seq: -1,
+        menuOrder: 0,
+        title: ''
+      }
+    }
 })
 
 const emits = defineEmits(['update:modelValue', 'save:after'])
-
-// asyncData
-const menuFindAllBody = {
-    menuSeq : props.menuSeq
-}
 
 // constant
 const width = 450;
@@ -32,11 +33,16 @@ const form = ref<VForm|null>(null)
 
 // reactive
 const isEdit = computed(()=>{
-    return props.menuSeq > 0
+    return props.menu.seq > 0
 })
 
 const tVisible = computed({
     get() {
+        parentSeq.value = props.menu.seq
+        title.value = props.menu.title
+        menuOrder.value = props.menu.menuOrder
+        publicFlag.value = YN.Y
+
         return props.modelValue
     },
     set(val : boolean) {
@@ -48,7 +54,7 @@ const currentTreeArray = computed(()=>{
     let result : Tree[][] = []
     for (const tTreeList of props.accumList || []) {
         let innerArray : Tree[] = []
-        for (const target of tTreeList) {
+        for (const target of tTreeList || []) {
             innerArray.push({
                 name : target.title,
                 uniqueSeq : target.seq,
@@ -63,17 +69,30 @@ const currentTreeArray = computed(()=>{
 
 
 // data
-const title = ref('')
-const menuOrder = ref(1)
+const title = ref(props.menu.title)
+const menuOrder = ref(props.menu.menuOrder)
 const menuType = ref('B')
 const publicFlag = ref(YN.Y)
-const parentSeq : Ref<number> = ref(props.menuSeq)
+const parentSeq = ref(props.menu.seq)
 
 // method
 const menuSave = async ()=>{
+    // parentSeq값은 form과 별개이므로 따로 validate
+    // 선택안된 상태는 -1
+    if (parentSeq.value < 0) {
+      useAlertStore().open('상위 메뉴를 선택해주세요.');
+      return
+    }
     if (await useValidateForm(form)) {
-        const param = {title: title.value, menuOrder: menuOrder.value, menuType: menuType.value, publicFlag: publicFlag.value, parentSeq: parentSeq.value}
-        const result = await useCBFetch().post<MenuData>('/api/blog/private/menu/save', {body: param})
+        const param = {title: title.value,
+          menuOrder: isEdit ? props.menu.menuOrder || 1 : menuOrder.value,
+          menuType: menuType.value,
+          publicFlag: publicFlag.value,
+          parentSeq: parentSeq.value,
+          seq: isEdit ? props.menu.seq || 1 : 1
+        }
+        const api = isEdit.value ? useCBFetch().put : useCBFetch().post
+        const result = await api('/api/blog/private/menu/save', {body: param})
         useAlertStore().openWithCallback('메뉴가 저장되었습니다.', ()=>{
             tVisible.value=false
             emits('save:after')

@@ -21,7 +21,10 @@ export const useCBFetch = ()=> {
     const post = async <ResT> (path : string, param? : UseFetchOptions<ResT>)=>{
         return commonLogic(path, 'post', param)
     }
-    return {get, post}
+    const put = async <ResT> (path : string, param? : UseFetchOptions<ResT>)=>{
+        return commonLogic(path, 'put', param)
+    }
+    return {get, post, put}
 }
 
 const commonLogic = async <ResT> (path : string, method : RouterMethod, param? : UseFetchOptions<ResT>) => {
@@ -32,7 +35,6 @@ const commonLogic = async <ResT> (path : string, method : RouterMethod, param? :
         param.method = method
         param.credentials = 'include'
         if (!process.dev) param.baseURL = useRuntimeConfig().public.baseURL;
-
         const result : _AsyncData<CommonResponse<ResT> | any, FetchError<ResT> | null> = param ? await useFetch(path, param) : await useFetch(path)
 
         if (result.error.value) {
@@ -43,6 +45,7 @@ const commonLogic = async <ResT> (path : string, method : RouterMethod, param? :
 
         const resultData : CommonResponse<ResT> | null = result.data.value
         const success = resultData?.httpCode === 200 && resultData?.errorCode === COMMON.API.SUCCESS.CODE
+
         if (resultData?.alertFlag) {
             useAlertStore().open(resultData?.message || '')
         }
