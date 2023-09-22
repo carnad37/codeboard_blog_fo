@@ -107,3 +107,8 @@ export interface SaveForm<T> {
     update: T[]
     delete: T[]
 }
+
+export interface DataTableSort {
+    key : string,
+    order : 'asc' | 'desc'
+}

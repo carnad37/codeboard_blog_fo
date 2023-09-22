@@ -88,7 +88,7 @@ const editorType = computed({
         // 스크롤 이동
         if (typeSelectBox.value) {
             if (val !== EditorType.HTMLEditor) {
-                typeSelectBox.value.scrollIntoView({behavior:'smooth'})
+                // typeSelectBox.value.scrollIntoView({behavior:'smooth'})
             }
         }
         if (props.editor) {
@@ -103,7 +103,7 @@ const editorType = computed({
 // @move-next="moveNext(cIdx)"
 
 const loadCallback = ()=>{
-    typeSelectBox.value?.scrollIntoView({behavior:'smooth'})
+    // typeSelectBox.value?.scrollIntoView({behavior:'smooth'})
 }
 
 const loadLanguages = (val : string[]) => {

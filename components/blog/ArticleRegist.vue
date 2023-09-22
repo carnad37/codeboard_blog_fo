@@ -13,31 +13,74 @@ import {
 } from "~/composables/common-interface";
 import EditorSelector from "~/components/common/EditorSelector.vue";
 import {useAlertStore} from "#imports";
+import {VCard} from "vuetify/components";
 
 // props
 interface Props {
     modelValue?: boolean
-    articleData?: ArticleData
+    articleSeq: number
     menu: MenuData
 }
+
 const props = withDefaults(defineProps<Props>(), {
     modelValue: false,
+
 })
 
 const emits = defineEmits(['update:modelValue'])
 
+
 // constant
+const testDiv : Ref<HTMLElement | null> = ref(null)
+// watch
+watch(
+    ()=>props.modelValue
+    , async (value, oldValue) => {
+
+        // articleSeq의 값이 변경된경우.
+        // 내부 정보를 다시 불러온다.
+        if (value) {
+            loading.value = true
+            if (props.articleSeq > 0) {
+                // 값지정 실제 컨텐츠 가져옴
+                const result = await useCBFetch().get<ArticleData>('/api/blog/private/article/find', {params: {seq : props.articleSeq}})
+                if (result.data?.data) {
+                    const articleData = result.data.data
+                    title.value = articleData.title
+                    summary.value = articleData.summary
+                    contents.value = articleData.contents?.length
+                        ? articleData.contents
+                        : [{
+                        content: '',
+                        status: SaveFormStatus.insert,
+                        editor: EditorType.TextArea,
+                        contentOrder: 0
+                    }]
+                }
+            } else {
+                // 초기화
+                contents.value = [{
+                    content: '',
+                    status: SaveFormStatus.insert,
+                    editor: EditorType.TextArea,
+                    contentOrder: 0
+                }]
+            }
+            loading.value = false
+        }
+    }
+)
 
 // refs
 const form = ref<VForm|null>(null)
 
 // reactive
 const isEdit = computed(()=>{
-    return !!props.articleData
+    return props.articleSeq > 0
 })
 const tVisible = computed({
     get() {
-        return props.modelValue
+        return props.modelValue && !loading.value
     },
     set(val : boolean) {
         emits('update:modelValue', val)
@@ -45,25 +88,21 @@ const tVisible = computed({
 })
 
 // data
-const title = ref(isEdit ? props.articleData?.title : '' )
-const summary = ref(isEdit ? props.articleData?.summary : '' )
-const publicFlag = ref(isEdit ? props.articleData?.publicFlag : YN.Y)
-const initContent : ArticleContent = {
-    articleSeq: 0,
-    content: '',
-    editor: EditorType.TextArea,
-    status: SaveFormStatus.insert
-}
+const loading = ref(false)
+
+const title = ref('')
+const summary = ref('')
+const publicFlag = ref(YN.Y)
+
+// 게시물 콘텐츠 리스트
+const contents = ref([] as ArticleContent[])
 
 // 콘텐츠 초기화
 const contentForm : SaveForm<ArticleContent> = {
-    insert : isEdit ? [] : [initContent],
+    insert : [],
     update : [],
     delete : [],
 }
-
-// 게시물 콘텐츠 리스트
-const contents = ref(isEdit ? props.articleData?.contents || [initContent] : [initContent])
 
 // method
 const articleSave = async ()=>{
@@ -79,7 +118,8 @@ const articleSave = async ()=>{
         // isEdit일경우 SaveForm으로 콘텐츠 정보 수정
 
         const param = { boardSeq : props.menu.seq, title: title.value, summary: summary.value, publicFlag : publicFlag.value, contents : contentForm }
-        const result = await useCBFetch().post<ArticleData>('/api/blog/private/article/save', {body: param})
+        const api = isEdit.value ? useCBFetch().put : useCBFetch().post
+        const result = await api<ArticleData>('/api/blog/private/article/save', {body: param})
         // let responseArticle = new ArticleData();
         // if (result.data?.data) {
         //     responseArticle = result.data.data
@@ -91,7 +131,7 @@ const articleSave = async ()=>{
 const addEditor = (index : number)=>{
     const targetList = contents.value
     targetList.splice(index + 1, 0, {
-        articleSeq: isEdit.value ? props.articleData?.seq || 0 : 0,
+        articleSeq: isEdit.value ? props.articleSeq || 0 : 0,
         content: '',
         editor: EditorType.TextArea,
         status: SaveFormStatus.insert
@@ -128,12 +168,11 @@ const moveNext = (idx : number)=>{
     }
 }
 
-
 </script>
 
 <template>
-    <v-dialog class="mx-auto my-auto article-editor" v-model="tVisible" :persistent="true">
-        <v-card>
+    <v-dialog class="mx-auto my-auto " :scrollable="true" v-model="tVisible" :persistent="true">
+        <v-card class="article-editor" ref="testDiv">
             <v-form ref="form">
             <v-container class="pa-8">
                 <v-row>
@@ -209,6 +248,4 @@ const moveNext = (idx : number)=>{
         }
     }
 }
-
-
 </style>

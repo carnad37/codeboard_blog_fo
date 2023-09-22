@@ -35,7 +35,7 @@ onMounted(()=>{
           <nuxt-link :to="'/menu/list'">메뉴 리스트입니다</nuxt-link>
       </div>
       <div>
-          <nuxt-link :to="'/article/2/list'">블로그 리스트입니다</nuxt-link>
+          <nuxt-link :to="'/article/1/list'">블로그 리스트입니다</nuxt-link>
       </div>
       <div style="height: 500px" ref="map"></div>
       <v-btn>테스트</v-btn>
