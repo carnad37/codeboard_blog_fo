@@ -26,23 +26,26 @@ export const useRecaptcha = (callback : (token:string) => void)=>{
     return result;
 }
 
+/**
+ * 특정 통신기능동안 다른기능을 막아야할 경우 사용(중복 API사용 방지)
+ */
 export const useApiProcess = defineStore('api-process-store', ()=>{
     // const alert : CommonAlert = reactive({visible : false, message : ''})
-    let isNetworkProcessing = false
+    let isNetworkProcessing = ref(false)
 
-    const start = async (callback : Function) => {
-        if (!isNetworkProcessing) {
-            isNetworkProcessing = true
+    const process = async (callback : Function) => {
+        if (!isNetworkProcessing.value) {
+            isNetworkProcessing.value = true
             await callback();
-            isNetworkProcessing = false
+            isNetworkProcessing.value = false
         }
     }
 
-    const stop = () => {
-        isNetworkProcessing = false
+    const forcedStop = () => {
+        isNetworkProcessing.value = false
     }
 
-    return {start, stop};
+    return {process, forcedStop};
 })
 
 /**
@@ -57,7 +60,6 @@ export const useModelValue =  defineStore('api-model-value', <T>()=>{
     type Result = {
         props : Props
         computedValue : WritableComputedRef<T>
-
     }
 
     const init = () : Result => {

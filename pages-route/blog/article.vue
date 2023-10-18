@@ -15,7 +15,6 @@ definePageMeta({
  layout: 'menu-layout'
 })
 const headerSetting = useLayoutStore().header
-headerSetting.visible = true
 
 const page = ref(5)
 

@@ -27,7 +27,13 @@ export const useUserAuth = ()=> {
         }
         return success
     }
-    const logout = () => {}
+    const logout = async () => {
+        const {success} =  await useCBFetch().post<LoginResponse>('/auth/logout');
+        if (success) {
+            useAuthCheck().doLogout();
+        }
+        return success
+    }
     return {login, check, logout}
 }
 
@@ -40,10 +46,15 @@ export const useAuthCheck = defineStore('user-auth-api',() => {
     const doLogin = () =>{
         userAuth.value = UserAuth.MEMBER
     }
-    const isLogin = ()=> {
+
+    const doLogout = () =>{
+        userAuth.value = UserAuth.ANONYMOUS
+    }
+
+    const isLogin = computed(()=>{
         // 로그인 상태일 경우
         return userAuth.value !== UserAuth.ANONYMOUS
-    }
+    })
 
     const isAdmin = () => {
         return userAuth.value === UserAuth.ADMIN
@@ -53,5 +64,5 @@ export const useAuthCheck = defineStore('user-auth-api',() => {
         return userAuth.value === UserAuth.MEMBER
     }
 
-    return {doLogin, isLogin}
+    return {doLogin, doLogout, isLogin}
 })

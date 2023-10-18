@@ -24,7 +24,8 @@ const props = withDefaults(defineProps<Props>(), {
     isLast: false
 })
 
-// constant
+
+// created
 const emits = defineEmits(['update:editorType', 'addEditor', 'delEditor', 'movePrev', 'moveNext'])
 const oriEditorType = props.editor.editor
 const oriContents = props.editor.content
@@ -33,8 +34,8 @@ const oriOrder = props.editor.contentOrder
 // 추가된 컨텐츠는 타겟으로 잡지않음
 if (props.editor.status !== SaveFormStatus.insert) {
     watch(()=>oriOrder !== props.editor.contentOrder
-            && oriContents !== props.editor.content
-            && oriEditorType !== props.editor.editor
+            || oriContents !== props.editor.content
+            || oriEditorType !== props.editor.editor
         , async (value) => {
             // 해당값이 참일경우 변경상태라는 의미
             props.editor.status = value ? SaveFormStatus.update : undefined
@@ -42,7 +43,6 @@ if (props.editor.status !== SaveFormStatus.insert) {
     )
 }
 
-// data
 const typeSelectBox : Ref<HTMLElement | null> = ref(null)
 const blankArray : string[] = []
 const languagesArray = ref(blankArray)
@@ -137,7 +137,7 @@ const loadLanguages = (val : string[]) => {
 <!--        <div class="my-2 border-sm rounded-s overflow-hidden" :style="{'border-color' : 'gray !important', 'opacity' : '1'}">-->
         <div>
             <EditorCode v-if="editorType === EditorType.CodeEditor" v-model="contents" :language="selectLang" @init:languages="loadLanguages"></EditorCode>
-            <v-textarea v-else-if="editorType === EditorType.TextArea" variant="outlined" v-model="contents" :clearable="true"></v-textarea>
+            <v-textarea v-else-if="editorType === EditorType.TextArea" variant="outlined" v-model="contents" auto-grow :clearable="true"></v-textarea>
             <EditorMarkdown v-else-if="editorType === EditorType.MarkdownEditor" v-model="contents" :load-callback="loadCallback"></EditorMarkdown>
         </div>
     </div>

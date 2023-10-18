@@ -4,6 +4,7 @@ import MenuRegist from "~/components/blog/MenuRegist.vue";
 import {SymbolKind} from "vscode-languageserver-types";
 import Array = SymbolKind.Array;
 import {useCBFetch} from "~/composables/custom-fetch";
+import {useLayoutStore} from "~/composables/layout-api";
 // export interface MenuData {
 //     seq: number
 //     title: string
@@ -19,7 +20,10 @@ definePageMeta({
     middleware: 'auth'
 })
 
-useLayoutStore().header.title = '테스트'
+useLayoutStore().enableHeader({
+    title : '테스트'
+})
+
 
 // constant
 // const userSeq : number = parseInt(useRoute().params.userSeq as string)

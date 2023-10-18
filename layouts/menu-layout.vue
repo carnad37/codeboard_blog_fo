@@ -3,8 +3,6 @@ import Header from "~/components/parts/Header.vue";
 import Footer from "~/components/parts/Footer.vue";
 import CommonAlertDialog from "~/components/parts/CommonAlertDialog.vue";
 
-useLayoutStore().header.visible = true
-
 </script>
 
 <template>

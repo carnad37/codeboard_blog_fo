@@ -31,45 +31,50 @@ const emits = defineEmits(['update:modelValue'])
 
 
 // constant
-const testDiv : Ref<HTMLElement | null> = ref(null)
+const testDiv = ref()
 // watch
 watch(
-    ()=>props.modelValue
+    ()=>props.articleSeq
     , async (value, oldValue) => {
-
         // articleSeq의 값이 변경된경우.
         // 내부 정보를 다시 불러온다.
-        if (value) {
+        if (value > 0) {
             loading.value = true
-            if (props.articleSeq > 0) {
-                // 값지정 실제 컨텐츠 가져옴
-                const result = await useCBFetch().get<ArticleData>('/api/blog/private/article/find', {params: {seq : props.articleSeq}})
-                if (result.data?.data) {
-                    const articleData = result.data.data
-                    title.value = articleData.title
-                    summary.value = articleData.summary
-                    contents.value = articleData.contents?.length
-                        ? articleData.contents
-                        : [{
-                        content: '',
-                        status: SaveFormStatus.insert,
-                        editor: EditorType.TextArea,
-                        contentOrder: 0
-                    }]
-                }
-            } else {
-                // 초기화
-                contents.value = [{
+            // 값지정 실제 컨텐츠 가져옴
+            const result = await useCBFetch().get<ArticleData>('/api/blog/private/article/find', {params: {seq : props.articleSeq}})
+            if (result.data?.data) {
+                const articleData = result.data.data
+                title.value = articleData.title
+                summary.value = articleData.summary
+                contents.value = articleData.contents?.length
+                    ? articleData.contents
+                    : [{
                     content: '',
                     status: SaveFormStatus.insert,
                     editor: EditorType.TextArea,
                     contentOrder: 0
                 }]
             }
-            loading.value = false
+        } else {
+            // 초기화
+            contents.value = [{
+                content: '',
+                status: SaveFormStatus.insert,
+                editor: EditorType.TextArea,
+                contentOrder: 0
+            }]
         }
+
+        loading.value = false
+    },
+    {
+        deep : true
     }
 )
+
+onUpdated(()=>{
+    console.log("updated")
+})
 
 // refs
 const form = ref<VForm|null>(null)
@@ -80,9 +85,12 @@ const isEdit = computed(()=>{
 })
 const tVisible = computed({
     get() {
+        console.log(props.modelValue && !loading.value)
         return props.modelValue && !loading.value
     },
     set(val : boolean) {
+        console.log(testDiv.value)
+
         emits('update:modelValue', val)
     }
 })
@@ -168,10 +176,11 @@ const moveNext = (idx : number)=>{
     }
 }
 
+
 </script>
 
 <template>
-    <v-dialog class="mx-auto my-auto " :scrollable="true" v-model="tVisible" :persistent="true">
+    <v-dialog class="mx-auto my-auto" :scrollable="true" v-model="tVisible" :persistent="true">
         <v-card class="article-editor" ref="testDiv">
             <v-form ref="form">
             <v-container class="pa-8">

@@ -74,6 +74,11 @@ export default defineNuxtConfig({
                     file: resolve(__dirname, './pages-route/blog/article')
                 },
                 {
+                    name: 'BoardArticleInsert',
+                    path: '/article/:boardSeq/insert/:articleSeq?',
+                    file: resolve(__dirname, './pages-route/blog/articleRegister')
+                },
+                {
                     name: 'BoardArticleList',
                     path: '/article/:boardSeq/list',
                     file: resolve(__dirname, './pages-route/blog/articleList')

@@ -85,11 +85,12 @@ export interface ArticleContent {
 export interface ArticleData {
     seq: number
     title: string
-    contents: Array<ArticleContent>
+    contents?: Array<ArticleContent>
     summary: string
     publicFlag?: YN
     boardSeq?: number
     categorySeq?: number
+    uploadContents?: SaveForm<ArticleContent>
 }
 
 export interface MenuData {

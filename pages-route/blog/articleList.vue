@@ -34,9 +34,7 @@ interface ArticleResult {
 
 // method
 const popRegister = ()=>{
-    selectArticleSeq.value = 0
-    // selectArticleData.value =
-    registerFlag.value = true
+    useRouter().push({path: `/article/${menuSeq}/insert`})
 }
 
 
@@ -72,19 +70,13 @@ const pageMove = async (inputPage : number)=>{
 }
 
 const rowClickCallback = async (e : Event, value : { item: DataTableItem })=>{
-    try {
-        selectArticleSeq.value = parseInt(value.item.columns.seq)
-    } catch (e) {
-        selectArticleSeq.value = 0
-    }
-    registerFlag.value = true
+    await useRouter().push({path: `/article/${menuSeq}/insert/${value.item.columns.seq}`})
 }
 
 
 // data
 const page = ref(1)
 const itemsPerPage = ref(10)
-const registerFlag = ref(false)
 
 const dataHeader = [
     {
@@ -110,8 +102,8 @@ const selectArticleSeq = ref(0)
 const tableLoading = ref(false)
 const sortBy = ref([] as Array<DataTableSort>)
 
-const headerSetting = useLayoutStore().header
-headerSetting.visible = true
+// const headerSetting = useLayoutStore().header
+// headerSetting.visible = true
 
 const menuSeq = useRoute().params.boardSeq
 const menuApiResult = await useCBFetch().get<MenuData>('/api/blog/private/menu/find', {params : {seq : menuSeq}})
@@ -144,7 +136,7 @@ menuReload({page:page.value, itemsPerPage:10, sortBy:sortBy.value})
                 <div class="text-center pt-2">
                     <v-pagination
                         :model-value="page"
-                        :length="Math.ceil(totalCnt / itemsPerPage) || 1"
+                        :length="totalCnt"
                         @update:modelValue="pageMove"
                     ></v-pagination>
 <!--                    <v-text-field-->
@@ -165,7 +157,7 @@ menuReload({page:page.value, itemsPerPage:10, sortBy:sortBy.value})
             <v-btn variant="elevated" color="deep-purple-darken-4" @click="popRegister()">등록</v-btn>
         </div>
     </div>
-    <ArticleRegist v-model="registerFlag" :article-seq="selectArticleSeq" :menu="menu"></ArticleRegist>
+<!--    <ArticleRegist v-model="registerFlag" :article-seq="selectArticleSeq" :menu="menu"></ArticleRegist>-->
 </template>
 
 <style scoped>
