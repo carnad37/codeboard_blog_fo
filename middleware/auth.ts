@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
      *
      * 현재는 2로 진행
      */
-    if (!await useAuthCheck().isLogin()) {
+    if (!useAuthCheck().isLogin) {
         // return abortNavigation("403")
         throw createError({ statusCode: 403, statusMessage: 'Not Login' })
     }
