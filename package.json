@@ -15,13 +15,14 @@
     "typescript": "4.9.3"
   },
   "dependencies": {
-    "@mdi/font": "^7.2.96",
+    "@mdi/font": "^7.3.67",
     "@pinia/nuxt": "^0.4.11",
     "@toast-ui/editor": "^3.2.2",
     "monaco-editor": "^0.41.0",
     "sass": "^1.62.1",
     "vue-recaptcha": "^3.0.0-alpha.6",
-    "vuetify": "^3.3.10"
+    "vuetify": "^3.3.10",
+    "marked": "^9.1.2"
   },
   "overrides": {
     "vue": "latest"

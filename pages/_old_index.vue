@@ -6,11 +6,11 @@ import {DivNode} from "postcss-value-parser";
 import {useAuthCheck} from "~/composables/user-auth";
 
 definePageMeta({
-    layout: "menu-layout"
+    layout: "no-menu-layout"
 })
 
 const isLogin = computed(()=>{
-    return useAuthCheck().isLogin()
+    return useAuthCheck().isLogin
 })
 
 const map : Ref<HTMLDivElement | undefined> = ref()
@@ -30,6 +30,7 @@ const map : Ref<HTMLDivElement | undefined> = ref()
 </script>
 <template>
   <div>
+      <div v-text="useAuthCheck().isLogin"></div>
       <div v-if="!isLogin">
           <nuxt-link :to="'/user/login'">로그인 페이지입니다</nuxt-link>
       </div>

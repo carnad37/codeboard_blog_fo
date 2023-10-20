@@ -67,11 +67,11 @@ const editorType = computed({
     },
     set(val : EditorType) {
         // 스크롤 이동
-        if (typeSelectBox.value) {
-            if (val !== EditorType.HTMLEditor) {
-                typeSelectBox.value.scrollIntoView({behavior:'smooth'})
-            }
-        }
+        // if (typeSelectBox.value) {
+        //     if (val !== EditorType.HTMLEditor) {
+        //         typeSelectBox.value.scrollIntoView({behavior:'smooth'})
+        //     }
+        // }
         if (props.editorType) {
             emits('update:editorType', val)
         } else {

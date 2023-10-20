@@ -31,6 +31,7 @@ export const useUserAuth = ()=> {
         const {success} =  await useCBFetch().post<LoginResponse>('/auth/logout');
         if (success) {
             useAuthCheck().doLogout();
+            useAlertStore().open('로그아웃에 성공했습니다.')
         }
         return success
     }
@@ -51,10 +52,10 @@ export const useAuthCheck = defineStore('user-auth-api',() => {
         userAuth.value = UserAuth.ANONYMOUS
     }
 
-    const isLogin = computed(()=>{
+    const isLogin = ()=>{
         // 로그인 상태일 경우
         return userAuth.value !== UserAuth.ANONYMOUS
-    })
+    }
 
     const isAdmin = () => {
         return userAuth.value === UserAuth.ADMIN

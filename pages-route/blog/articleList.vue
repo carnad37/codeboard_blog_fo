@@ -28,13 +28,14 @@ interface DataTableItem {
     };
 }
 interface ArticleResult {
-    totalCnt: number
+    totalPage: number
+    isMine : boolean
     articleList: ArticleData[]
 }
 
 // method
 const popRegister = ()=>{
-    useRouter().push({path: `/article/${menuSeq}/insert`})
+    useRouter().push({path: `/article/${menuSeq}/edit`})
 }
 
 
@@ -52,7 +53,7 @@ const menuReload = async ({ page, itemsPerPage, sortBy} : {page:number, itemsPer
         const resultData = result?.data?.data
         if (resultData) {
             dataList = resultData.articleList
-            dataCnt = resultData.totalCnt
+            dataCnt = resultData.totalPage
         }
         // dataList = result?.data?.data || [] as ArticleData[]
     } catch (e) {
@@ -70,7 +71,7 @@ const pageMove = async (inputPage : number)=>{
 }
 
 const rowClickCallback = async (e : Event, value : { item: DataTableItem })=>{
-    await useRouter().push({path: `/article/${menuSeq}/insert/${value.item.columns.seq}`})
+    await useRouter().push({path: `/article/${menuSeq}/edit/${value.item.columns.seq}`})
 }
 
 
@@ -98,12 +99,8 @@ const dataHeader = [
     },
 ]
 
-const selectArticleSeq = ref(0)
 const tableLoading = ref(false)
 const sortBy = ref([] as Array<DataTableSort>)
-
-// const headerSetting = useLayoutStore().header
-// headerSetting.visible = true
 
 const menuSeq = useRoute().params.boardSeq
 const menuApiResult = await useCBFetch().get<MenuData>('/api/blog/private/menu/find', {params : {seq : menuSeq}})
@@ -157,7 +154,6 @@ menuReload({page:page.value, itemsPerPage:10, sortBy:sortBy.value})
             <v-btn variant="elevated" color="deep-purple-darken-4" @click="popRegister()">등록</v-btn>
         </div>
     </div>
-<!--    <ArticleRegist v-model="registerFlag" :article-seq="selectArticleSeq" :menu="menu"></ArticleRegist>-->
 </template>
 
 <style scoped>

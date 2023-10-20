@@ -30,6 +30,12 @@ export const useLayoutStore = defineStore('layout-store', ()=>{
         footerSetting.isSticky = false
     }
 
+    const setHeaderTitle = (title : string) => {
+        if (headerSetting.visible && title?.length > 0) {
+            headerSetting.title = title
+        }
+    }
+
     return {
         header : readonly(headerSetting)
         , footer : readonly(footerSetting)
@@ -37,6 +43,7 @@ export const useLayoutStore = defineStore('layout-store', ()=>{
         , enableFooter
         , disableHeader
         , disableFooter
+        , setHeaderTitle
     }
 })
 

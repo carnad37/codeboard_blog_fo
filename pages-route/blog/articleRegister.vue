@@ -103,7 +103,7 @@ const articleSave = async ()=>{
                 await refreshArticle();
             } else if (result.data?.data && result.data.data.seq > 0) {
                 const tData = result.data?.data;
-                await useRouter().replace({path : `/article/${tData?.boardSeq}/insert/${tData?.seq}`})
+                await useRouter().replace({path : `/article/${tData?.boardSeq}/edit/${tData?.seq}`})
             }
         }
     }
@@ -239,14 +239,8 @@ if (isEdit.value) {
 </template>
 
 <style>
-.article-editor {
-    width: 80%;
-    height: 100%;
-    margin: auto;
-}
 @media screen and (max-width: 900px) {
     .article-editor {
-        width: 100%;
         .v-overlay__content {
             width: 100% !important;
             max-width: 100% !important;

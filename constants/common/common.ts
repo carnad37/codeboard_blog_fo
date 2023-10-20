@@ -9,6 +9,11 @@ export const COMMON = {
         ERROR : {
             NETWORK_FAIL : '서버와 통신에 실패했습니다'
         },
+        URL: {
+            BLOG : {
+
+            }
+        }
     },
     CONFIG : {
         EMIT: {
