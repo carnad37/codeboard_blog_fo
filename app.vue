@@ -10,11 +10,11 @@ nuxtApp.hook("page:finish", () => {
 });
 </script>
 <template>
+    <template v-if="useLoading().isVisible()">
+        <v-progress-circular class="loading-overlay" indeterminate size="50"></v-progress-circular>
+        <div class="loading-overlay-cover"></div>
+    </template>
     <NuxtLayout>
-        <template v-if="useLoading().isVisible()">
-          <v-progress-circular class="loading-overlay" indeterminate size="50"></v-progress-circular>
-          <div class="loading-overlay-cover"></div>
-        </template>
         <NuxtPage/>
     </NuxtLayout>
 </template>

@@ -17,8 +17,9 @@ enum MoveState {
 const defaultHeaderHeight = 64
 // 헤더 이벤트 관련
 const currentScroll = ref(0)
-const currentState = ref(MoveState.DOWN)
+const currentState = ref(MoveState.UP)
 const isProcessing = ref(false)
+const headerPosition = ref('absolute')
 
 // 스크롤 up/down 판별 필요
 onMounted(()=>{
@@ -39,37 +40,52 @@ const scrollEvent = ()=>{
     const gapScroll = getScroll - currentScroll.value
 
     currentState.value = gapScroll >= 0 ? MoveState.DOWN : MoveState.UP
+    if (currentState.value === MoveState.UP ) {
+        headerPosition.value = 'fixed'
+    } else {
+        headerPosition.value = 'absolute'
+    }
 
     currentScroll.value = getScroll
 
     isProcessing.value = false
 }
 
+const nickname = computed(()=>{
+    return useAuthCheck().user.nickname
+})
+
 </script>
 
 <template>
-    <div v-show="currentState === MoveState.UP" class="header-wrapper">
-      <v-toolbar v-if="setting.visible">
-          <v-toolbar-title>{{ setting.title }}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn v-if="!isLogin" icon @click.prevent="useRouter().push({path:`/user/login`})">
-              <v-icon icon="mdi-login" color="rgba(0, 0, 0, 1)"></v-icon>
-          </v-btn>
-          <v-btn v-if="isLogin" icon @click.prevent="useUserAuth().logout()">
-              <v-icon icon="mdi-logout" color="rgba(0, 0, 0, 1)"></v-icon>
-          </v-btn>
-      </v-toolbar>
+    <div class="header-wrapper" :style="{position: headerPosition}">
+        <v-expand-transition>
+            <v-toolbar v-if="setting.visible">
+                <v-toolbar-title>{{ setting.title }}</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn v-if="!isLogin" icon @click.prevent="useRouter().push({path:`/user/login`})">
+                    <v-icon icon="mdi-login" color="rgba(0, 0, 0, 1)"></v-icon>
+                </v-btn>
+                <template v-if="isLogin">
+                    <span class="font-weight-bold font-italic mr-2" v-text="nickname"></span>
+                    <span class=" mr-5">님</span>
+                    <v-btn icon @click.prevent="useUserAuth().logout()">
+                        <v-icon icon="mdi-logout" color="rgba(0, 0, 0, 1)"></v-icon>
+                    </v-btn>
+                </template>
+
+            </v-toolbar>
+        </v-expand-transition>
     </div>
     <div class="header-wrapper-block"></div>
 </template>
 
 <style scoped>
 .header-wrapper {
-    position: fixed;
+    position: absolute;
     width: 100%;
     top: 0;
     z-index: 100;
-    height: 64px !important;
 }
 .header-wrapper-block {
     height: 64px;

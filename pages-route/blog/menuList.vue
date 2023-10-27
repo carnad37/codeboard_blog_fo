@@ -41,7 +41,7 @@ const selectMenu = ref(initMenu)
 const menuListLoad = async () : Promise<MenuData[]>=>{
     const targetSeq = parentSeqArray.value[parentSeqArray.value.length - 1]
     let params = {parentSeq : targetSeq}
-    const result = await useCBFetch().get<MenuData>('/api/blog/private/menu/findAll', {params})
+    const result = await useCBFetch().get<MenuData>('/api/blog/public/menu/findAll', {params})
     let blogList : Array<MenuData> = [];
     if (result.data?.dataList) {
         blogList = result.data.dataList;
@@ -115,15 +115,14 @@ const dataHeader = [
 
 <template>
     <div id="main-post" class="content">
-        <v-btn @click="moveParentMenu" v-text="'뒤로가기'"></v-btn>
         <v-table>
             <thead>
                 <tr>
-                    <th scope="col" v-for="tHeader in dataHeader">
+                    <th scope="col" v-for="tHeader in dataHeader" :class="`text-center`" >
                         <span v-text="tHeader.title"></span>
                     </th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
+                    <th scope="col" style="width: 100px"></th>
+                    <th scope="col" style="width: 100px"></th>
                 </tr>
             </thead>
             <tbody>

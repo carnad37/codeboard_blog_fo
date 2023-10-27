@@ -98,6 +98,7 @@ export interface MenuData {
     title: string
     menuOrder: number
     parentSeq?: number
+    regUserSeq: number
     publicFlag?: YN
     uuid?: string
     childrenList?: Array<MenuData>

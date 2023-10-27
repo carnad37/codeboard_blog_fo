@@ -31,7 +31,7 @@ const map : Ref<HTMLDivElement | undefined> = ref()
 <template>
   <div>
       <div v-if="!isLogin">
-          <nuxt-link :to="'/user/login'">로그인 페이지입니다</nuxt-link>
+          <nuxt-link :to="'/user/login'">{{ useAuthCheck().isLogin() }}</nuxt-link>
       </div>
       <template v-if="isLogin">
           <v-btn @click.prevent.once="useUserAuth().logout()" v-text="'로그아웃'"></v-btn>

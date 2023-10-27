@@ -113,7 +113,7 @@ const refreshArticle = async ()=>{
     useLoading().start()
     // 한번 초기화해줘야한다.
     articleInfo.value.contents = []
-    const result = await useCBFetch().get<ArticleData>('/api/blog/private/article/find', {params: {seq : articleInfo.value.seq}})
+    const result = await useCBFetch().get<ArticleData>('/api/blog/public/article/find', {params: {seq : articleInfo.value.seq}})
     if (result.data?.data) {
         const articleData = result.data.data
         articleInfo.value.title = articleData.title
@@ -229,7 +229,7 @@ if (isEdit.value) {
                     <v-row>
                         <v-col class="pb-6 text-center">
                             <v-btn variant="elevated" height="45" width="80" class="font-weight-bold text-h6 mr-2" color="indigo-accent-4" @click.self.prevent="articleSave()" v-text="isEdit ? '수정' : '등록'"></v-btn>
-                            <v-btn variant="elevated" height="45" width="80" class="font-weight-bold text-sm-button" color="indigo-accent-4" @click.self.prevent="useRouter().push({path:`/article/${articleInfo.boardSeq}/list`})" v-text="'뒤로가기'"></v-btn>
+                            <v-btn variant="elevated" height="45" width="80" class="font-weight-bold text-sm-button" color="indigo-accent-4" @click.self.prevent="useRouter().push({path:`/article/${articleInfo.boardSeq}/list`})" v-text="'목록으로'"></v-btn>
                         </v-col>
                     </v-row>
                 </v-container>

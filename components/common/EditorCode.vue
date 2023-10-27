@@ -9,11 +9,15 @@ import ITextModel = editor.ITextModel;
 interface Props {
     modelValue: string  // show flag
     language?: string
+    readonly?: boolean
+    height?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
     modelValue: '',
-    language: 'html'
+    language: 'html',
+    readonly: false,
+    height: 300
 })
 const emits = defineEmits(['update:modelValue', 'init:languages'])
 
@@ -42,7 +46,8 @@ onMounted(()=>{
         }, {
             value : props.modelValue || '',
             language: props.language,
-            theme: 'vs-dark'
+            theme: 'vs-dark',
+            readOnly: props.readonly
         })
     }
 })
@@ -51,10 +56,15 @@ onUnmounted(()=>{
     emits('init:languages', [])
 })
 
+const heightPx = computed(()=>{
+    return props.height + "px"
+})
+
+
 </script>
 
 <template>
-    <div class="code-editor" style="height: 300px;" ref="editorTag"></div>
+    <div class="code-editor" :style="{height: heightPx}" ref="editorTag"></div>
 </template>
 
 <style>

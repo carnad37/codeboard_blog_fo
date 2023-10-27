@@ -4,9 +4,18 @@ import {defineStore} from "pinia";
 
 export interface LoginResponse  {
     email : string,
+    seq : number,
+    nickname : string,
     accessToken : string,
     refreshToken : string,
     userAuth? : UserAuth
+}
+
+export interface UserInfoResponse  {
+    email: string
+    nickname: string,
+    userType: string
+    userSeq: number
 }
 
 /**
@@ -14,16 +23,19 @@ export interface LoginResponse  {
  */
 export const useUserAuth = ()=> {
     const login = async (email : string, passwd : string) => {
-        const {success} =  await useCBFetch().post<LoginResponse>('/auth/login', {body: {email, passwd}});
-        if (success) {
-            useAuthCheck().doLogin();
+        const { data, success} =  await useCBFetch().post<LoginResponse>('/auth/login', {body: {email, passwd}});
+        console.log(data?.data)
+        if (success && data?.data) {
+            const response = data.data
+
+            await useAuthCheck().doLogin(response);
         }
         return success
     }
     const check = async () => {
         const {success} =  await useCBFetch().post<LoginResponse>('/auth/login/check');
         if (success) {
-            useAuthCheck().doLogin();
+            await useAuthCheck().doLogin();
         }
         return success
     }
@@ -32,6 +44,7 @@ export const useUserAuth = ()=> {
         if (success) {
             useAuthCheck().doLogout();
             useAlertStore().open('로그아웃에 성공했습니다.')
+            await useRouter().push({path: '/'})
         }
         return success
     }
@@ -42,28 +55,51 @@ export const useUserAuth = ()=> {
  *
  */
 export const useAuthCheck = defineStore('user-auth-api',() => {
-    const userAuth = ref(UserAuth.ANONYMOUS)
+    const userInfo = reactive({auth : UserAuth.ANONYMOUS, seq : 0, nickname : ''})
 
-    const doLogin = () =>{
-        userAuth.value = UserAuth.MEMBER
+    const doLogin = async (response? : LoginResponse) =>{
+        if (!response) {
+            const {data, success} = await useCBFetch().get<UserInfoResponse>('/api/member/private/user/selfInfo');
+            const infoResponse = data?.data
+            if (!infoResponse) {
+                throw new Error('fail get user info')
+            } else {
+                response = {
+                    seq : infoResponse.userSeq,
+                    email : infoResponse.email,
+                    nickname : infoResponse.nickname,
+                    accessToken : '',
+                    refreshToken : ''
+                }
+            }
+        }
+        if (userInfo.seq < 1) {
+            userInfo.seq =  response.seq
+            userInfo.nickname = response.nickname
+        }
+        userInfo.auth = UserAuth.MEMBER
+    }
+
+    const isMine = (seq : number)=>{
+        return userInfo.seq == seq;
     }
 
     const doLogout = () =>{
-        userAuth.value = UserAuth.ANONYMOUS
+        userInfo.auth = UserAuth.ANONYMOUS
     }
 
     const isLogin = ()=>{
         // 로그인 상태일 경우
-        return userAuth.value !== UserAuth.ANONYMOUS
+        return userInfo.auth !== UserAuth.ANONYMOUS
     }
 
     const isAdmin = () => {
-        return userAuth.value === UserAuth.ADMIN
+        return userInfo.auth === UserAuth.ADMIN
     }
 
     const isMember = () => {
-        return userAuth.value === UserAuth.MEMBER
+        return userInfo.auth === UserAuth.MEMBER
     }
 
-    return {doLogin, doLogout, isLogin}
+    return {doLogin, doLogout, isLogin, isMine, user : readonly(userInfo)}
 })
