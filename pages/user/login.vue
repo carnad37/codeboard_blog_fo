@@ -79,6 +79,6 @@ function openRegister() {
 </template>
 
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>

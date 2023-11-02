@@ -11,6 +11,6 @@ import CommonAlertDialog from "~/components/parts/CommonAlertDialog.vue";
     </v-app>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>

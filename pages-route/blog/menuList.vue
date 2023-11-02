@@ -148,7 +148,7 @@ const dataHeader = [
     <MenuRegist v-model="registerFlag" :accumList="accumContents" :menu="selectMenu" @save:after="reloadList"></MenuRegist>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 #main-post {
    margin: 0 auto;
 }

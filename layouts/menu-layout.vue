@@ -18,7 +18,7 @@ useLayoutStore().enableFooter({isSticky : false})
     </v-app>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 main {
     width: 70%;
     height: 100%;

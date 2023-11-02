@@ -137,7 +137,7 @@ const loadLanguages = (val : string[]) => {
     </div>
 </template>
 
-<style>
+<style lang="scss">
 @media screen and (max-width: 530px) {
     .middle-margin {
         margin-bottom: 20px;

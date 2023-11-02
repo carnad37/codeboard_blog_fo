@@ -4,7 +4,7 @@ import {defineStore} from "pinia";
 
 export interface LoginResponse  {
     email : string,
-    seq : number,
+    userSeq : number,
     nickname : string,
     accessToken : string,
     refreshToken : string,
@@ -65,7 +65,7 @@ export const useAuthCheck = defineStore('user-auth-api',() => {
                 throw new Error('fail get user info')
             } else {
                 response = {
-                    seq : infoResponse.userSeq,
+                    userSeq : infoResponse.userSeq,
                     email : infoResponse.email,
                     nickname : infoResponse.nickname,
                     accessToken : '',
@@ -74,7 +74,7 @@ export const useAuthCheck = defineStore('user-auth-api',() => {
             }
         }
         if (userInfo.seq < 1) {
-            userInfo.seq =  response.seq
+            userInfo.seq =  response.userSeq
             userInfo.nickname = response.nickname
         }
         userInfo.auth = UserAuth.MEMBER

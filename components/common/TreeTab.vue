@@ -170,7 +170,7 @@ const selectTreeData = ref(process)
     </v-card>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .menu-top {
     .menu-depth {
         padding: 12px 13px 12px 13px;

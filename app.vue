@@ -19,7 +19,7 @@ nuxtApp.hook("page:finish", () => {
     </NuxtLayout>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .loading-overlay {
     z-index: 100;
     position: fixed;

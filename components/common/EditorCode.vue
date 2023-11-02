@@ -67,6 +67,6 @@ const heightPx = computed(()=>{
     <div class="code-editor" :style="{height: heightPx}" ref="editorTag"></div>
 </template>
 
-<style>
-@import "monaco-editor/min/vs/editor/editor.main.css";
+<style lang="scss">
+
 </style>

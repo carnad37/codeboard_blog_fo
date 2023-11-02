@@ -3,6 +3,11 @@ import {ArticleData, EditorType, YN} from "~/composables/common-interface";
 import {useCBFetch} from "~/composables/custom-fetch";
 import {marked} from 'marked';
 import EditorCode from "~/components/common/EditorCode.vue";
+import {useAlertStore} from "#imports";
+import EditorMarkdown from "~/components/common/EditorMarkdown.vue";
+import {Editor, toastui} from "@toast-ui/editor";
+import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
+import ViewerMarkdown from "~/components/common/ViewerMarkdown.vue";
 
 interface PostData {
   seq: number
@@ -33,6 +38,17 @@ if (!articleResult.data?.data) {
 
 const articleInfo = ref(articleResult.data.data)
 const markedPaser = marked.parse
+const isMine = ref(useAuthCheck().isMine(articleInfo.value.regUserSeq || 0))
+
+// 삭제기능
+const delArticle = async ()=>{
+    const {data, success} = await useCBFetch().post<ArticleData>('/api/blog/private/article/delete', {body: {seq : resultSeq}})
+    if (success && !!data?.data) {
+        useAlertStore().open('게시물을 삭제했습니다.')
+        await useRouter().replace({path:`/article/${articleInfo.value.boardSeq}/list`})
+    }
+}
+
 
 </script>
 
@@ -54,13 +70,15 @@ const markedPaser = marked.parse
             </v-expansion-panel>
         </v-expansion-panels>
         <v-divider class="mt-5" thickness="2"></v-divider>
-        <div ref="test"></div>
         <template v-for="(content, idx) in articleInfo.contents">
-            <editor-code v-if="content.editor === EditorType.CodeEditor" :readonly="true" :model-value="content.content" :language="'java'" :height="400"/>
-            <div v-else class="article-content mt-5" v-html="content.editor === EditorType.MarkdownEditor ? markedPaser(content.content) : content.content"/>
+            <editor-code v-if="content.editor === EditorType.CodeEditor" class="article-content mt-5" :readonly="true" :model-value="content.content" :language="'java'" :height="200"/>
+            <viewer-markdown v-else-if="content.editor === EditorType.MarkdownEditor" class="article-content mt-5" :model-value="content.content"></viewer-markdown>
+            <div v-else class="article-content mt-5" v-html="content.content"/>
         </template>
         <div class="article-footer text-center mt-5">
-            <v-btn @click.prevent="useRouter().push(`/article/${articleInfo.boardSeq}/edit/${articleInfo.seq}`)">수정</v-btn>
+            <v-btn @click.prevent="useRouter().push(`/article/${articleInfo.boardSeq}/list`)">목록</v-btn>
+            <v-btn v-if="isMine" @click.prevent="useRouter().push(`/article/${articleInfo.boardSeq}/edit/${articleInfo.seq}`)">수정</v-btn>
+            <v-btn v-if="isMine" @click.prevent="delArticle()">삭제</v-btn>
         </div>
         <div class="article-comment">
 

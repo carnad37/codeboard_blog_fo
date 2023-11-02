@@ -112,6 +112,6 @@ const joinClick = async ()=>{
     </v-no-ssr>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>

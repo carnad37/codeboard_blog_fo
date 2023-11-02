@@ -80,7 +80,7 @@ const nickname = computed(()=>{
     <div class="header-wrapper-block"></div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .header-wrapper {
     position: absolute;
     width: 100%;

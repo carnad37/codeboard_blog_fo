@@ -15,6 +15,6 @@ const pushPage = ()=> {
     </v-card>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>

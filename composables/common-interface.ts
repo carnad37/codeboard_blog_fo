@@ -90,6 +90,7 @@ export interface ArticleData {
     publicFlag?: YN
     boardSeq?: number
     categorySeq?: number
+    regUserSeq?: number
     uploadContents?: SaveForm<ArticleContent>
 }
 

@@ -13,6 +13,7 @@ import {
 import EditorSelector from "~/components/common/EditorSelector.vue";
 import {useAlertStore, useLayoutStore, useLoading} from "#imports";
 import {VCard} from "vuetify/components";
+import EditorMarkdown from "~/components/common/EditorMarkdown.vue";
 
 
 definePageMeta({
@@ -175,11 +176,33 @@ const moveNext = (idx : number)=>{
 
 // created
 if (isEdit.value) {
-    console.log("edit!")
     // 값지정 실제 컨텐츠 가져옴
     await refreshArticle();
 }
+// 업로드기능
+const testFile = ref<HTMLInputElement>()
+const testText = ref('')
+const fileInfo = ()=>{
+    console.log(testFile.value)
+    console.log(testFile.value?.value)
+    console.log(testFile.value?.files)
 
+    if (testFile.value?.files && testFile.value?.files?.length > 0) {
+        const [file] = testFile.value?.files
+        if (file) {
+            const tUrl = URL.createObjectURL(file)
+            console.log(tUrl)
+            testText.value = `![텍스트](${tUrl || ''})`
+        }
+    }
+
+    // for (const tContent of articleInfo.value?.contents || []) {
+    //     console.log(tContent.content)
+    //     tContent.content = tContent.content +
+    //     console.log(tContent.content)
+    // }
+
+}
 
 </script>
 
@@ -209,6 +232,11 @@ if (isEdit.value) {
                     <v-row>
                         <v-divider class="ma-3" :style="{'border-color': 'black', 'opacity' : '1'}" thickness="2">텍스트</v-divider>
                     </v-row>
+                    <v-row>
+                        <v-col>
+                            <EditorMarkdown v-model="testText"></EditorMarkdown>
+                        </v-col>
+                    </v-row>
                     <template v-for="(item, cIdx) in articleInfo.contents">
                         <v-row v-if="item.status !== SaveFormStatus.delete" :key="`editor-selector-${cIdx}`">
                             <v-col>
@@ -228,6 +256,8 @@ if (isEdit.value) {
                     </template>
                     <v-row>
                         <v-col class="pb-6 text-center">
+                            <v-file-input ref="testFile" label="File input"></v-file-input>
+                            <v-btn @click.prevent="fileInfo">파일테스트</v-btn>
                             <v-btn variant="elevated" height="45" width="80" class="font-weight-bold text-h6 mr-2" color="indigo-accent-4" @click.self.prevent="articleSave()" v-text="isEdit ? '수정' : '등록'"></v-btn>
                             <v-btn variant="elevated" height="45" width="80" class="font-weight-bold text-sm-button" color="indigo-accent-4" @click.self.prevent="useRouter().push({path:`/article/${articleInfo.boardSeq}/list`})" v-text="'목록으로'"></v-btn>
                         </v-col>
@@ -238,7 +268,7 @@ if (isEdit.value) {
 <!--    </v-dialog>-->
 </template>
 
-<style>
+<style lang="scss" scoped>
 @media screen and (max-width: 900px) {
     .article-editor {
         .v-overlay__content {

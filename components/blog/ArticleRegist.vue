@@ -234,7 +234,7 @@ const moveNext = (idx : number)=>{
     </v-dialog>
 </template>
 
-<style>
+<style lang="scss">
 .article-editor {
     width: 80%;
     height: 80%;

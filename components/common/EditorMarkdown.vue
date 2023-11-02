@@ -22,6 +22,11 @@ const contents = computed({
     }
 })
 
+// 이미지 업로드 로직
+const customUploadFile = (file : File, callback? :()=>void)=>{
+    const request = new FormData();
+}
+
 const editorTag : Ref<HTMLElement | null> = ref(null)
 let editor : Editor | null = null
 let firstFlag = true
@@ -56,9 +61,11 @@ onBeforeUnmount(()=>{
 </script>
 
 <template>
-    <div class="html-editor" style="height: 300px;" ref="editorTag"></div>
+    <div class="html-editor-wrap">
+        <div class="html-editor" style="height: 300px;" ref="editorTag"></div>
+    </div>
 </template>
 
-<style>
-@import "@toast-ui/editor/dist/toastui-editor.css";
+<style lang="scss" scoped>
+@import "assets/scss/toast_ui";
 </style>

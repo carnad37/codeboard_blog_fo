@@ -164,7 +164,7 @@ const isMine = ref(useAuthCheck().isMine(menuData.regUserSeq))
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 #main-post {
    margin: 0 auto;
 }

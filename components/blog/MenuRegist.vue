@@ -155,6 +155,6 @@ const callChildren = async () : Promise<Array<Tree>> => {
     </v-dialog>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 
 </style>
