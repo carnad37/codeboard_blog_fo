@@ -1,19 +1,10 @@
 <script setup lang="ts">
 import {useCBFetch} from "~/composables/custom-fetch";
 import {VForm} from "vuetify/components/VForm";
-import {
-    ArticleContent,
-    ArticleData,
-    EditorType,
-    MenuData,
-    SaveForm,
-    SaveFormStatus,
-    YN
-} from "~/composables/common-interface";
+import {ArticleContent, ArticleData, EditorType, SaveForm, SaveFormStatus, YN} from "~/composables/common-interface";
 import EditorSelector from "~/components/common/EditorSelector.vue";
 import {useAlertStore, useLayoutStore, useLoading} from "#imports";
 import {VCard} from "vuetify/components";
-import EditorMarkdown from "~/components/common/EditorMarkdown.vue";
 
 
 definePageMeta({
@@ -81,7 +72,11 @@ const articleSave = async ()=>{
         // update된 내용 비교 필요.
         for (let idx=0; idx<articleInfo.value.contents.length; idx++) {
             const targetContent = articleInfo.value.contents[idx]
-            targetContent.contentOrder = idx
+            if (targetContent.contentOrder !== idx) {
+                targetContent.contentOrder = idx
+                targetContent.status = SaveFormStatus.update
+            }
+
             if (targetContent?.status) {
                 contentForm[targetContent.status].push(targetContent)
             }
@@ -94,6 +89,7 @@ const articleSave = async ()=>{
             , title: articleInfo.value.title
             , summary: articleInfo.value.summary
             , publicFlag : articleInfo.value.publicFlag
+            , uploadFiles : uploadFileArray
             , uploadContents : contentForm
         }
         // const api = isEdit.value ? useCBFetch().put : useCBFetch().post
@@ -180,28 +176,10 @@ if (isEdit.value) {
     await refreshArticle();
 }
 // 업로드기능
-const testFile = ref<HTMLInputElement>()
-const testText = ref('')
-const fileInfo = ()=>{
-    console.log(testFile.value)
-    console.log(testFile.value?.value)
-    console.log(testFile.value?.files)
 
-    if (testFile.value?.files && testFile.value?.files?.length > 0) {
-        const [file] = testFile.value?.files
-        if (file) {
-            const tUrl = URL.createObjectURL(file)
-            console.log(tUrl)
-            testText.value = `![텍스트](${tUrl || ''})`
-        }
-    }
-
-    // for (const tContent of articleInfo.value?.contents || []) {
-    //     console.log(tContent.content)
-    //     tContent.content = tContent.content +
-    //     console.log(tContent.content)
-    // }
-
+const uploadFileArray : number[] = []
+const uploadFilePushArray = (fileSeq : number)=>{
+    uploadFileArray.push(fileSeq)
 }
 
 </script>
@@ -232,11 +210,6 @@ const fileInfo = ()=>{
                     <v-row>
                         <v-divider class="ma-3" :style="{'border-color': 'black', 'opacity' : '1'}" thickness="2">텍스트</v-divider>
                     </v-row>
-                    <v-row>
-                        <v-col>
-                            <EditorMarkdown v-model="testText"></EditorMarkdown>
-                        </v-col>
-                    </v-row>
                     <template v-for="(item, cIdx) in articleInfo.contents">
                         <v-row v-if="item.status !== SaveFormStatus.delete" :key="`editor-selector-${cIdx}`">
                             <v-col>
@@ -248,6 +221,7 @@ const fileInfo = ()=>{
                                     @del-editor="delEditor(cIdx)"
                                     @move-prev="movePrev(cIdx)"
                                     @move-next="moveNext(cIdx)"
+                                    @update:upload-file="uploadFilePushArray"
                                     :is-first="cIdx === 0"
                                     :is-last="(articleInfo.contents?.length || 0 - 1) === cIdx"
                                 />
@@ -256,10 +230,8 @@ const fileInfo = ()=>{
                     </template>
                     <v-row>
                         <v-col class="pb-6 text-center">
-                            <v-file-input ref="testFile" label="File input"></v-file-input>
-                            <v-btn @click.prevent="fileInfo">파일테스트</v-btn>
                             <v-btn variant="elevated" height="45" width="80" class="font-weight-bold text-h6 mr-2" color="indigo-accent-4" @click.self.prevent="articleSave()" v-text="isEdit ? '수정' : '등록'"></v-btn>
-                            <v-btn variant="elevated" height="45" width="80" class="font-weight-bold text-sm-button" color="indigo-accent-4" @click.self.prevent="useRouter().push({path:`/article/${articleInfo.boardSeq}/list`})" v-text="'목록으로'"></v-btn>
+                            <v-btn variant="elevated" height="45" width="80" class="font-weight-bold text-h6" color="indigo-accent-4" @click.self.prevent="useRouter().push({path:`/article/${articleInfo.boardSeq}/list`})" v-text="'목록'"></v-btn>
                         </v-col>
                     </v-row>
                 </v-container>

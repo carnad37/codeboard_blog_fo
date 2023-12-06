@@ -47,7 +47,14 @@ onMounted(()=>{
             value : props.modelValue || '',
             language: props.language,
             theme: 'vs-dark',
-            readOnly: props.readonly
+            readOnly: props.readonly,
+            scrollBeyondLastLine: false,
+            // wordWrap: 'on',
+            // wrappingStrategy: 'advanced',
+            // minimap : {
+            //     enabled : false
+            // },
+            overviewRulerLanes: 0
         })
     }
 })
@@ -57,7 +64,12 @@ onUnmounted(()=>{
 })
 
 const heightPx = computed(()=>{
-    return props.height + "px"
+    if (props.readonly) {
+        let height = props.modelValue.split('\n').length * 20
+        return (height > props.height ? props.height : height) + 'px'
+    } else {
+        return props.height + "px"
+    }
 })
 
 

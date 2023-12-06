@@ -88,6 +88,6 @@ const nickname = computed(()=>{
     z-index: 100;
 }
 .header-wrapper-block {
-    height: 64px;
+    min-height: 64px;
 }
 </style>

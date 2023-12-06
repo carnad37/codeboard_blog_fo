@@ -125,7 +125,7 @@ const isMine = ref(useAuthCheck().isMine(menuData.regUserSeq))
 </script>
 
 <template>
-    <div id="main-post" class="content">
+    <div id="main-post" class="content pt-lg-10 pt-md-7 pt-3">
         <v-data-table-server
             :items-length="totalCnt"
             :items-per-page="itemsPerPage"
@@ -165,7 +165,7 @@ const isMine = ref(useAuthCheck().isMine(menuData.regUserSeq))
 </template>
 
 <style lang="scss" scoped>
-#main-post {
-   margin: 0 auto;
-}
+//#main-post {
+//   margin: 0 auto;
+//}
 </style>

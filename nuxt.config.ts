@@ -34,6 +34,7 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             baseURL : process.env.GW_URL,
+            imgURL : process.env.IMG_URL,
             recaptcha: {
                 v2SiteKey: process.env.RECAPTCHA_KEY
             },

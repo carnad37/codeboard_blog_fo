@@ -4,6 +4,7 @@
 import {useRecaptcha} from "~/composables/common-api";
 import {DivNode} from "postcss-value-parser";
 import {useAuthCheck} from "~/composables/user-auth";
+import {fi} from "vuetify/locale";
 
 definePageMeta({
     layout: "menu-layout"
@@ -27,11 +28,19 @@ const map : Ref<HTMLDivElement | undefined> = ref()
 //     });
 // })
 
+const imageUrl = ref('')
+
+const testFunc = (files : File[])=>{
+    for (const file of files) {
+        imageUrl.value = window.URL.createObjectURL(file)
+    }
+}
+
 </script>
 <template>
   <div>
       <div v-if="!isLogin">
-          <nuxt-link :to="'/user/login'">{{ useAuthCheck().isLogin() }}</nuxt-link>
+          <nuxt-link :to="'/user/login'">{{ useAuthCheck().isLogin()}}</nuxt-link>
       </div>
       <template v-if="isLogin">
           <v-btn @click.prevent.once="useUserAuth().logout()" v-text="'로그아웃'"></v-btn>
@@ -42,6 +51,7 @@ const map : Ref<HTMLDivElement | undefined> = ref()
       <div v-if="isLogin">
           <nuxt-link :to="'/article/1/list'">블로그 리스트입니다</nuxt-link>
       </div>
+      <v-file-input @update:model-value="testFunc" accept="image/gif, image/jpeg, image/png"></v-file-input>
       <div style="height: 500px" ref="map"></div>
       <v-btn>테스트</v-btn>
   </div>

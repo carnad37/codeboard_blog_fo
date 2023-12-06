@@ -6,6 +6,7 @@ import EditorMarkdown from "~/components/common/EditorMarkdown.vue";
 
 type Props = {
     editor : ArticleContent
+    editorIndex : number
     editorType? : EditorType
     isVisibleSelect? : boolean
     isFirst? : boolean
@@ -24,17 +25,13 @@ const props = withDefaults(defineProps<Props>(), {
     isLast: false
 })
 
-
 // created
-const emits = defineEmits(['update:editorType', 'addEditor', 'delEditor', 'movePrev', 'moveNext'])
+const emits = defineEmits(['update:editorType', 'update:uploadFile', 'addEditor', 'delEditor', 'movePrev', 'moveNext'])
 const oriEditorType = props.editor.editor
 const oriContents = props.editor.content
-const oriOrder = props.editor.contentOrder
-
 // 추가된 컨텐츠는 타겟으로 잡지않음
 if (props.editor.status !== SaveFormStatus.insert) {
-    watch(()=>oriOrder !== props.editor.contentOrder
-            || oriContents !== props.editor.content
+    watch(()=> oriContents !== props.editor.content
             || oriEditorType !== props.editor.editor
         , async (value) => {
             // 해당값이 참일경우 변경상태라는 의미
@@ -104,6 +101,10 @@ const loadLanguages = (val : string[]) => {
     languagesArray.value = val
 }
 
+const uploadFile = (fileSeq : number)=>{
+    emits('update:uploadFile', fileSeq)
+}
+
 </script>
 
 <template>
@@ -132,7 +133,7 @@ const loadLanguages = (val : string[]) => {
         <div>
             <EditorCode v-if="editorType === EditorType.CodeEditor" v-model="contents" :language="selectLang" @init:languages="loadLanguages"></EditorCode>
             <v-textarea v-else-if="editorType === EditorType.TextArea" variant="outlined" v-model="contents" auto-grow :clearable="true"></v-textarea>
-            <EditorMarkdown v-else-if="editorType === EditorType.MarkdownEditor" v-model="contents" :load-callback="loadCallback"></EditorMarkdown>
+            <EditorMarkdown v-else-if="editorType === EditorType.MarkdownEditor" v-model="contents" :load-callback="loadCallback" @update:upload-file="uploadFile"></EditorMarkdown>
         </div>
     </div>
 </template>

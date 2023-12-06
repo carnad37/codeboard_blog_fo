@@ -91,6 +91,7 @@ export interface ArticleData {
     boardSeq?: number
     categorySeq?: number
     regUserSeq?: number
+    uploadFiles?: number[]
     uploadContents?: SaveForm<ArticleContent>
 }
 
@@ -114,4 +115,15 @@ export interface SaveForm<T> {
 export interface DataTableSort {
     key : string,
     order : 'asc' | 'desc'
+}
+
+export interface BlogFile {
+    seq? : number,
+    orgFileName? : string,
+    savFileName? : string,
+    fileType? : string,
+    typeSeq? : number,
+    fileSize? : number,
+    mime? : string,
+    ext? : string
 }
