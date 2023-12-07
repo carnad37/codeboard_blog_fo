@@ -41,7 +41,7 @@ const uploadImageFile = async (file : Blob | File, callback :(url: string, alt?:
 
         // 이미지 정보 저장
         emits("update:uploadFile", seq)
-        callback(useRuntimeConfig().public.imgURL + fileName, '이미지')
+        callback(useRuntimeConfig().public.imgURL + "/" + fileName, '이미지')
     } else {
         useAlertStore().open("이미지 업로드에 실패하였습니다.")
     }
