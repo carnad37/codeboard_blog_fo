@@ -21,10 +21,6 @@ export default defineNuxtConfig({
         head: {
             script: [
                 {
-                    src: 'https://www.google.com/recaptcha/api.js?render=6LcJoXwnAAAAAN2BMtKP-TbwLnh85OHgveoD-_D5'
-                    , defer: true
-                }
-                ,{
                     src: 'https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=edd67cb5c23c34fb31f461a1d9b9d362'
                     , defer: true
                 }
@@ -36,7 +32,8 @@ export default defineNuxtConfig({
             baseURL : process.env.GW_URL,
             imgURL : process.env.IMG_URL,
             recaptcha: {
-                v2SiteKey: process.env.RECAPTCHA_KEY
+                v2SiteKey: process.env.RECAPTCHA_KEY,
+                // v3SiteKey: 'YOUR_V3_SITEKEY_HERE',
             },
             custom: {
                 user: {

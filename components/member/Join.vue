@@ -48,12 +48,12 @@ const passwdCheckRule = [
     },
 ];
 
-const recaptcha : Ref<string> = ref('')
+const recaptcha = ref('')
 
-const join = async (token:string)=>{
+const join = async ()=>{
     // validate
     if (await useValidateForm(form)) {
-        const bodyParam = {email: email.value, passwd: passwd.value, nickname: nickname.value, token: token}
+        const bodyParam = {email: email.value, passwd: passwd.value, nickname: nickname.value, token: recaptcha.value}
         const response = await useCBFetch().post<LoginResponse>('/api/member/public/user/save', {body : bodyParam})
         const responseData = response.data;
         if (responseData?.errorCode !== COMMON.API.SUCCESS.CODE && responseData?.alertFlag) {
@@ -64,12 +64,6 @@ const join = async (token:string)=>{
             useAlertStore().open(`회원가입이 완료되었습니다.\n환영합니다 ${nickname.value} 님.`)
         }
     }
-}
-
-const joinClick = async ()=>{
-    useRecaptcha((token)=>{
-        join(token);
-    });
 }
 
 </script>
@@ -99,10 +93,10 @@ const joinClick = async ()=>{
                     </v-row>
                     <v-row>
                         <v-col v-if="recaptcha" class="mb-6 text-center">
-                            <v-btn variant="elevated" class="font-weight-bold" color="indigo-accent-4" @click="joinClick()">회원가입</v-btn>
+                            <v-btn variant="elevated" class="font-weight-bold" color="indigo-accent-4" @click.prevent="join()">회원가입</v-btn>
                         </v-col>
                         <v-col v-if="recaptcha" class="mb-6 text-center">
-                            <v-btn variant="elevated" class="font-weight-bold" color="red-darken-1" @click="tVisible = false">닫기</v-btn>
+                            <v-btn variant="elevated" class="font-weight-bold" color="red-darken-1" @click.prevent="tVisible = false">닫기</v-btn>
                         </v-col>
                     </v-row>
                 </v-container>

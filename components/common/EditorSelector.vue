@@ -132,7 +132,7 @@ const uploadFile = (fileSeq : number)=>{
 <!--        <div class="my-2 border-sm rounded-s overflow-hidden" :style="{'border-color' : 'gray !important', 'opacity' : '1'}">-->
         <div>
             <EditorCode v-if="editorType === EditorType.CodeEditor" v-model="contents" :language="selectLang" @init:languages="loadLanguages"></EditorCode>
-            <v-textarea v-else-if="editorType === EditorType.TextArea" variant="outlined" v-model="contents" auto-grow :clearable="true"></v-textarea>
+            <v-textarea v-else-if="editorType === EditorType.TextArea" variant="outlined" v-model="contents" :auto-grow="true" :clearable="true"></v-textarea>
             <EditorMarkdown v-else-if="editorType === EditorType.MarkdownEditor" v-model="contents" :load-callback="loadCallback" @update:upload-file="uploadFile"></EditorMarkdown>
         </div>
     </div>

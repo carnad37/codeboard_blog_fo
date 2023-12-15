@@ -30,10 +30,11 @@ useLayoutStore().enableHeader({
 const page = ref(5)
 const registerFlag = ref(false)
 const initMenu : MenuData = {
-  seq : 0,
-  menuOrder : 0,
-  title : '',
-  uuid : ''
+    seq : 0,
+    menuOrder : 0,
+    title : '',
+    uuid : '',
+    regUserSeq: 0
 }
 const selectMenu = ref(initMenu)
 

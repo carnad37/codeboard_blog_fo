@@ -18,10 +18,14 @@ export const RULES = {
         (value: string) => {
             const passLenth : integer = parseInt(useRuntimeConfig().public.custom.user.passwd.length)
             const permitChar = useRuntimeConfig().public.custom.user.passwd.permitChar
-            const regExp = new RegExp(`(?!((?:[A-Za-z]+)|(?:[${permitChar}]+)|(?:[0-9]+))$)[A-Za-z\\d${permitChar}]{${passLenth},}$`, 'g')
+            const regExp = new RegExp(`(?!((?:[A-Za-z]+)|(?:[${permitChar}]+)|(?:[0-9]+))$)[A-Za-z0-9${permitChar}]{${passLenth},}$`, 'g')
             // 8문자 이상, 영문,숫자,특수문자 중 2가지이상
-            const result = regExp.test(value);
+            const result = value.search(regExp) >= 0
+            // const result = regExp.test(value);
             return result || '영문,숫자,특수문자 중 2가지이상'
         },
     ],
+    BLANK: [
+        (value: string) => !!value || '값을 입력해주세요',
+    ]
 } as const;

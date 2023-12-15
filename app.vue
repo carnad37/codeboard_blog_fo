@@ -8,6 +8,8 @@ nuxtApp.hook("page:start", () => {
 nuxtApp.hook("page:finish", () => {
     useLoading().stop();
 });
+
+useRecaptchaProvider()
 </script>
 <template>
     <template v-if="useLoading().isVisible()">
