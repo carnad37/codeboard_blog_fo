@@ -22,17 +22,21 @@ type EditorObj = {
 const props = withDefaults(defineProps<Props>(), {
     isVisibleSelect: true,
     isFirst: false,
-    isLast: false
+    isLast: false,
 })
+// init
+props.editor.langType = props.editor.langType || 'html'
 
 // created
 const emits = defineEmits(['update:editorType', 'update:uploadFile', 'addEditor', 'delEditor', 'movePrev', 'moveNext'])
 const oriEditorType = props.editor.editor
 const oriContents = props.editor.content
+const oriLangType = props.editor.langType
 // 추가된 컨텐츠는 타겟으로 잡지않음
 if (props.editor.status !== SaveFormStatus.insert) {
     watch(()=> oriContents !== props.editor.content
             || oriEditorType !== props.editor.editor
+            || oriLangType !== props.editor.langType
         , async (value) => {
             // 해당값이 참일경우 변경상태라는 의미
             props.editor.status = value ? SaveFormStatus.update : undefined
@@ -58,7 +62,7 @@ const editorData : Array<EditorObj> = [
     }
 ]
 const internalType = ref(EditorType.TextArea)
-const selectLang = ref('html')
+
 
 // computed
 const contents = computed({
@@ -71,7 +75,6 @@ const contents = computed({
         }
     }
 })
-
 
 const editorType = computed({
     get() {
@@ -114,7 +117,7 @@ const uploadFile = (fileSeq : number)=>{
                 <v-select :items="editorData" item-title="title" item-value="type" v-model="editorType">
                 </v-select>
                 <div class="mx-3"></div>
-                <v-autocomplete v-if="languagesArray.length > 0" :style="{'min-width':'120px'}" :items="languagesArray" v-model="selectLang">
+                <v-autocomplete v-if="languagesArray.length > 0" :style="{'min-width':'120px'}" :items="languagesArray" v-model="props.editor.langType">
                 </v-autocomplete>
             </v-sheet>
             <v-sheet class="mt-3 middle-margin d-flex" :style="{'min-width' : '80px'}">
@@ -131,7 +134,7 @@ const uploadFile = (fileSeq : number)=>{
         </div>
 <!--        <div class="my-2 border-sm rounded-s overflow-hidden" :style="{'border-color' : 'gray !important', 'opacity' : '1'}">-->
         <div>
-            <EditorCode v-if="editorType === EditorType.CodeEditor" v-model="contents" :language="selectLang" @init:languages="loadLanguages"></EditorCode>
+            <EditorCode v-if="editorType === EditorType.CodeEditor" v-model="contents" :language="props.editor.langType" @init:languages="loadLanguages"></EditorCode>
             <v-textarea v-else-if="editorType === EditorType.TextArea" variant="outlined" v-model="contents" :auto-grow="true" :clearable="true"></v-textarea>
             <EditorMarkdown v-else-if="editorType === EditorType.MarkdownEditor" v-model="contents" :load-callback="loadCallback" @update:upload-file="uploadFile"></EditorMarkdown>
         </div>

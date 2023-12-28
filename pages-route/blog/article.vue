@@ -71,7 +71,7 @@ const delArticle = async ()=>{
         </v-expansion-panels>
         <v-divider class="mt-5" thickness="2"></v-divider>
         <template v-for="(content, idx) in articleInfo.contents">
-            <editor-code v-if="content.editor === EditorType.CodeEditor" class="article-content mt-5" :readonly="true" :model-value="content.content" :language="'java'" :height="200"/>
+            <editor-code v-if="content.editor === EditorType.CodeEditor" class="article-content mt-5" :readonly="true" :model-value="content.content" :language="content.langType" :height="200"/>
             <viewer-markdown v-else-if="content.editor === EditorType.MarkdownEditor" class="article-content mt-5" :model-value="content.content"></viewer-markdown>
             <div v-else class="article-content mt-5" v-html="content.content"/>
         </template>

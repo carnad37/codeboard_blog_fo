@@ -80,6 +80,7 @@ export interface ArticleContent {
     editor : EditorType
     status? : SaveFormStatus
     contentOrder? : number
+    langType? : string
 }
 
 export interface ArticleData {

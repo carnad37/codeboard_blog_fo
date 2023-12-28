@@ -52,6 +52,7 @@ export const useAlertStore = defineStore('alert-store', ()=>{
     const alert : CommonAlert = reactive({visible : false, message : '', callback : ()=>{}})
     const open = (message : string)=> {
         alert.message = message
+        alert.callback = ()=>{}
         alert.visible = true
     }
 

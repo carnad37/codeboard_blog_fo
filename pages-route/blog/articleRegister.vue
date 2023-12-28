@@ -95,7 +95,7 @@ const articleSave = async ()=>{
         // const api = isEdit.value ? useCBFetch().put : useCBFetch().post
         const result = await useCBFetch().post<ArticleData>('/api/blog/private/article/save', {body: param})
         if (result.success) {
-            useAlertStore().open('저장했습니다.')
+            useAlertStore().openWithCallback('저장했습니다.', ()=>useRouter().replace({path : `/article/${boardSeq.value}/list`}) )
             if (isEdit.value) {
                 await refreshArticle();
             } else if (result.data?.data && result.data.data.seq > 0) {
